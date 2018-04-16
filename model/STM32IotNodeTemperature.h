@@ -65,6 +65,7 @@ namespace codal
     .isCombo       = 0,
     .pData         = ( void * ) &TEMP_Data,
     .pVTable       = ( void * ) &HTS221_T_Drv,
+    .pExtVTable    = 0,
    };
 
    STM32IotNodeI2C& _i2c;

@@ -44,6 +44,10 @@ namespace codal
 STM32IotNodeTemperature::STM32IotNodeTemperature( STM32IotNodeI2C& i2c )
 : _i2c( i2c )
 {
+ HTS221_Combo_Data[ 0 ].isHumInitialized = 0;
+ HTS221_Combo_Data[ 0 ].isTempInitialized = 0;
+ HTS221_Combo_Data[ 0 ].isHumEnabled = 0;
+ HTS221_Combo_Data[ 0 ].isTempEnabled = 0;
 }
 
 /**
@@ -87,15 +91,14 @@ int STM32IotNodeTemperature::requestUpdate()
 {
  if ( !DrvContext.isInitialized )
  {
-  sample = 17.2;
-  ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
+   ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
   STM32IotNodeTemperature::configure();
   ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
  }
  float Data;
  if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_Temp( &DrvContext, &Data ) == COMPONENT_OK )
  {
-//  sample = ( uint16_t ) ( Data * 10.0 );
+  sample = ( uint16_t ) ( Data * 10.0 );
   return DEVICE_OK;
  }
  return DEVICE_I2C_ERROR;
