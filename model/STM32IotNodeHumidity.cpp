@@ -94,7 +94,7 @@ int STM32IotNodeHumidity::requestUpdate()
   ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
  }
  float Data;
- if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Temp( &DrvContext, &Data ) == COMPONENT_OK )
+ if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Hum( &DrvContext, &Data ) == COMPONENT_OK )
  {
   sample = ( uint16_t ) ( Data * 10.0 );
   return DEVICE_OK;
