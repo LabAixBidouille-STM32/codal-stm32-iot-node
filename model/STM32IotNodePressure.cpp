@@ -24,13 +24,13 @@ DEALINGS IN THE SOFTWARE.
 */
 
 /**
-  * Class definition for temperature.
-  * Represents the temperature on the STM IOT node.
+  * Class definition for pressure.
+  * Represents the pressure on the STM IOT node.
   */
 
 #include "CodalConfig.h"
 #include "STM32IotNode.h"
-#include "STM32IotNodeTemperature.h"
+#include "STM32IotNodePressure.h"
 
 namespace codal
 {
@@ -38,34 +38,34 @@ namespace codal
 /**
   * Constructor.
   *
-  * Create a representation of the temperature on the STM32 IOT node
+  * Create a representation of the pressure on the STM32 IOT node
   *
   */
-STM32IotNodeTemperature::STM32IotNodeTemperature( STM32IotNodeI2C& i2c )
+STM32IotNodePressure::STM32IotNodePressure( STM32IotNodeI2C& i2c )
 : _i2c( i2c )
 {
 }
 
 /**
- * Configures the temperature for celsius range defined
+ * Configures the pressure range defined
  * in this object. The nearest values are chosen to those defined
  * that are supported by the hardware. The instance variables are then
  * updated to reflect reality.
  *
- * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the temperature could not be configured.
+ * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the pressure could not be configured.
  *
  * @note This method should be overidden by the hardware driver to implement the requested
  * changes in hardware.
  */
 
-int STM32IotNodeTemperature::configure( )
+int STM32IotNodePressure::configure( )
 {
  if ( !samplePeriod )
   samplePeriod = 1;
  float Value = 1000.0f / ( float ) samplePeriod;
- if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
+ if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
- if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
+ if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
  samplePeriod = 1000.0f / ( float ) Value;
  return DEVICE_OK;
@@ -83,16 +83,16 @@ int STM32IotNodeTemperature::configure( )
  * changes in hardware.
  */
 
-int STM32IotNodeTemperature::requestUpdate()
+int STM32IotNodePressure::requestUpdate()
 {
  if ( !DrvContext.isInitialized )
  {
-   ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
-  STM32IotNodeTemperature::configure();
-  ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
+   ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
+  STM32IotNodePressure::configure();
+  ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
  }
  float Data;
- if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_Temp( &DrvContext, &Data ) == COMPONENT_OK )
+ if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Hum( &DrvContext, &Data ) == COMPONENT_OK )
  {
   sample = ( uint16_t ) ( Data * 10.0 );
   return DEVICE_OK;

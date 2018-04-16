@@ -24,8 +24,8 @@ DEALINGS IN THE SOFTWARE.
 */
 
 /**
-  * Class definition for accelerometer.
-  * Represents the accelerometer on the STM IOT node.
+  * Class definition for humidity.
+  * Represents the humidity on the STM IOT node.
   */
 
 #include "CodalConfig.h"
@@ -38,18 +38,16 @@ namespace codal
 /**
   * Constructor.
   *
-  * Create a representation of the accelerometer on the STM32 IOT node
+  * Create a representation of the humidity on the STM32 IOT node
   *
   */
 STM32IotNodeHumidity::STM32IotNodeHumidity( STM32IotNodeI2C& i2c )
 : _i2c( i2c )
 {
- HTS221_Combo_Data[ 0 ].isHumInitialized = 0;
- HTS221_Combo_Data[ 0 ].isHumEnabled = 0;
 }
 
 /**
- * Configures the humidity for celsius range defined
+ * Configures the humidity range defined
  * in this object. The nearest values are chosen to those defined
  * that are supported by the hardware. The instance variables are then
  * updated to reflect reality.
