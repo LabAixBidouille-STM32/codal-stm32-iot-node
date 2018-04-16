@@ -34,7 +34,7 @@ main()
  IotNode.serial.printf( "scl: 0x%04X\r\n", IotNode.io.scl.name );
 
  IotNode.messageBus.listen(DEVICE_ID_BUTTON_A, DEVICE_BUTTON_EVT_CLICK, onClick);
- IotNode.i2c.setFrequency( 400000 );
+ IotNode.i2c.setFrequency( 100000 );
 
  while(1)
  {
@@ -46,6 +46,6 @@ main()
 //  IotNode.io.led.setDigitalValue(1);
 //  IotNode.sleep(200);
 //  IotNode.io.led.setDigitalValue(0);
-//  IotNode.sleep(200);
+  IotNode.sleep(200);
  }
 }
