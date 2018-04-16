@@ -47,7 +47,7 @@ namespace codal
     .comboData = &HTS221_Combo_Data[ 0 ],
    };
 
-   TEMPERATURE_Data_t TEMP_Data =
+   TEMPERATURE_Data_t TEMPERATURE_Data =
    {
     .pComponentData = ( void * ) &HTS221_T_Data,
     .pExtData       = 0,
@@ -63,7 +63,7 @@ namespace codal
     .isInitialized = 0,
     .isEnabled     = 0,
     .isCombo       = 0,
-    .pData         = ( void * ) &TEMP_Data,
+    .pData         = ( void * ) &TEMPERATURE_Data,
     .pVTable       = ( void * ) &HTS221_T_Drv,
     .pExtVTable    = 0,
    };

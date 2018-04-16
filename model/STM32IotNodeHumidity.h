@@ -42,14 +42,14 @@ namespace codal
  class STM32IotNodeHumidity : protected codal::Humidity
  {
 
-   HTS221_T_Data_t HTS221_T_Data =
+   HTS221_H_Data_t HTS221_H_Data =
    {
     .comboData = &HTS221_Combo_Data[ 0 ],
    };
 
-   TEMPERATURE_Data_t TEMP_Data =
+   HUMIDITY_Data_t HUMIDITY_Data =
    {
-    .pComponentData = ( void * ) &HTS221_T_Data,
+    .pComponentData = ( void * ) &HTS221_H_Data,
     .pExtData       = 0,
    };
 
@@ -63,8 +63,8 @@ namespace codal
     .isInitialized = 0,
     .isEnabled     = 0,
     .isCombo       = 0,
-    .pData         = ( void * ) &TEMP_Data,
-    .pVTable       = ( void * ) &HTS221_T_Drv,
+    .pData         = ( void * ) &HUMIDITY_Data,
+    .pVTable       = ( void * ) &HTS221_H_Drv,
     .pExtVTable    = 0,
    };
 
