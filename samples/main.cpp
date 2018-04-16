@@ -38,9 +38,11 @@ main()
 
  while(1)
  {
-  int16_t SampleHumidity    = IotNode.humidity.getSample( );
-  int16_t SampleTemperature = IotNode.temperature.getSample( );
-  IotNode.serial.printf("%d, %d\n", SampleHumidity, SampleTemperature );
+  int16_t SamplePressure    = IotNode.pressure.getSample( );
+  IotNode.serial.printf("%d\n", SamplePressure );
+//  int16_t SampleHumidity    = IotNode.humidity.getSample( );
+//  int16_t SampleTemperature = IotNode.temperature.getSample( );
+//  IotNode.serial.printf("%d, %d\n", SampleHumidity, SampleTemperature );
 //  codal::Sample3D Sample = IotNode.gyroscope.getSample( );
 //  IotNode.serial.printf("%d, %d, %d\n", Sample.x, Sample.y, Sample.z );
 //  IotNode.io.led.setDigitalValue(1);

@@ -48,6 +48,7 @@ STM32IotNode::STM32IotNode() :
     accelerometer( i2c, coordinateSpace ),
     gyroscope( i2c, coordinateSpace ),
     humidity( i2c ),
+    pressure( i2c ),
     temperature( i2c ),
     buttonA(io.buttonA, DEVICE_ID_BUTTON_A, DEVICE_BUTTON_ALL_EVENTS, ACTIVE_LOW)
 {
