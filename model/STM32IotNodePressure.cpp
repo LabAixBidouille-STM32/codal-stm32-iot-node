@@ -94,7 +94,7 @@ int STM32IotNodePressure::requestUpdate()
  float Data;
  if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Hum( &DrvContext, &Data ) == COMPONENT_OK )
  {
-  sample = ( uint16_t ) ( Data * 10.0 );
+  sample = ( uint16_t ) ( Data );
   return DEVICE_OK;
  }
  return DEVICE_I2C_ERROR;
