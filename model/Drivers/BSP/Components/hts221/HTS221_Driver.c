@@ -177,7 +177,7 @@ HTS221_Error_et HTS221_Set_InitConfig(void *handle, HTS221_Init_st* pxInit)
   if(HTS221_WriteReg(handle, HTS221_AV_CONF_REG, 1, buffer))
     return HTS221_ERROR;
 
-  if(HTS221_ReadReg(handle, HTS221_CTRL_REG1, 3, buffer))
+  if(HTS221_ReadReg(handle, HTS221_CTRL_REG1 | 0x80, 3, buffer))
     return HTS221_ERROR;
 
   buffer[0] &= ~(HTS221_BDU_MASK | HTS221_ODR_MASK);
@@ -192,7 +192,7 @@ HTS221_Error_et HTS221_Set_InitConfig(void *handle, HTS221_Init_st* pxInit)
   buffer[2] |= (uint8_t)pxInit->irq_output_type;
   buffer[2] |= ((uint8_t)pxInit->irq_enable) << HTS221_DRDY_BIT;
 
-  if(HTS221_WriteReg(handle, HTS221_CTRL_REG1, 3, buffer))
+  if(HTS221_WriteReg(handle, HTS221_CTRL_REG1 | 0x80, 3, buffer))
     return HTS221_ERROR;
 
   return HTS221_OK;
@@ -215,7 +215,7 @@ HTS221_Error_et HTS221_Get_InitConfig(void *handle, HTS221_Init_st* pxInit)
   pxInit->avg_h = (HTS221_Avgh_et)(buffer[0] & HTS221_AVGH_MASK);
   pxInit->avg_t = (HTS221_Avgt_et)(buffer[0] & HTS221_AVGT_MASK);
 
-  if(HTS221_ReadReg(handle, HTS221_CTRL_REG1, 3, buffer))
+  if(HTS221_ReadReg(handle, HTS221_CTRL_REG1 | 0x80, 3, buffer))
     return HTS221_ERROR;
 
   pxInit->odr = (HTS221_Odr_et)(buffer[0] & HTS221_ODR_MASK);
@@ -239,7 +239,7 @@ HTS221_Error_et HTS221_DeInit(void *handle)
 {
   uint8_t buffer[4];
 
-  if(HTS221_ReadReg(handle, HTS221_CTRL_REG1, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_CTRL_REG1 | 0x80, 2, buffer))
     return HTS221_ERROR;
 
   /* HTS221 in power down */
@@ -248,11 +248,11 @@ HTS221_Error_et HTS221_DeInit(void *handle)
   /* Make HTS221 boot */
   buffer[1] |= 0x01 << HTS221_BOOT_BIT;
 
-  if(HTS221_WriteReg(handle, HTS221_CTRL_REG1, 2, buffer))
+  if(HTS221_WriteReg(handle, HTS221_CTRL_REG1 | 0x80, 2, buffer))
     return HTS221_ERROR;
 
   /* Dump of data output */
-  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG, 4, buffer))
+  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG | 0x80, 4, buffer))
     return HTS221_ERROR;
 
   return HTS221_OK;
@@ -284,7 +284,7 @@ HTS221_Error_et HTS221_Get_RawMeasurement(void *handle, int16_t* humidity, int16
 {
   uint8_t buffer[4];
 
-  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG, 4, buffer))
+  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG | 0x80, 4, buffer))
     return HTS221_ERROR;
 
   *humidity = (int16_t)((((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0]);
@@ -306,20 +306,20 @@ HTS221_Error_et HTS221_Get_Humidity(void *handle, uint16_t* value)
   uint8_t buffer[2];
   float   tmp_f;
 
-  if(HTS221_ReadReg(handle, HTS221_H0_RH_X2, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_H0_RH_X2 | 0x80, 2, buffer))
     return HTS221_ERROR;
   H0_rh = buffer[0] >> 1;
   H1_rh = buffer[1] >> 1;
 
-  if(HTS221_ReadReg(handle, HTS221_H0_T0_OUT_L, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_H0_T0_OUT_L | 0x80, 2, buffer))
     return HTS221_ERROR;
   H0_T0_out = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
 
-  if(HTS221_ReadReg(handle, HTS221_H1_T0_OUT_L, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_H1_T0_OUT_L | 0x80, 2, buffer))
     return HTS221_ERROR;
   H1_T0_out = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
 
-  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG | 0x80, 2, buffer))
     return HTS221_ERROR;
   H_T_out = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
 
@@ -343,7 +343,7 @@ HTS221_Error_et HTS221_Get_HumidityRaw(void *handle, int16_t* value)
 {
   uint8_t buffer[2];
 
-  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_HR_OUT_L_REG | 0x80, 2, buffer))
     return HTS221_ERROR;
 
   *value = (int16_t)((((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0]);
@@ -364,7 +364,7 @@ HTS221_Error_et HTS221_Get_Temperature(void *handle, int16_t *value)
   uint8_t buffer[4], tmp;
   float   tmp_f;
 
-  if(HTS221_ReadReg(handle, HTS221_T0_DEGC_X8, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_T0_DEGC_X8 | 0x80, 2, buffer))
     return HTS221_ERROR;
   if(HTS221_ReadReg(handle, HTS221_T0_T1_DEGC_H2, 1, &tmp))
     return HTS221_ERROR;
@@ -374,13 +374,13 @@ HTS221_Error_et HTS221_Get_Temperature(void *handle, int16_t *value)
   T0_degC = T0_degC_x8_u16 >> 3;
   T1_degC = T1_degC_x8_u16 >> 3;
 
-  if(HTS221_ReadReg(handle, HTS221_T0_OUT_L, 4, buffer))
+  if(HTS221_ReadReg(handle, HTS221_T0_OUT_L | 0x80, 4, buffer))
     return HTS221_ERROR;
 
   T0_out = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
   T1_out = (((uint16_t)buffer[3]) << 8) | (uint16_t)buffer[2];
 
-  if(HTS221_ReadReg(handle, HTS221_TEMP_OUT_L_REG, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_TEMP_OUT_L_REG | 0x80, 2, buffer))
     return HTS221_ERROR;
 
   T_out = (((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0];
@@ -403,7 +403,7 @@ HTS221_Error_et HTS221_Get_TemperatureRaw(void *handle, int16_t* value)
 {
   uint8_t buffer[2];
 
-  if(HTS221_ReadReg(handle, HTS221_TEMP_OUT_L_REG, 2, buffer))
+  if(HTS221_ReadReg(handle, HTS221_TEMP_OUT_L_REG | 0x80, 2, buffer))
     return HTS221_ERROR;
 
   *value = (int16_t)((((uint16_t)buffer[1]) << 8) | (uint16_t)buffer[0]);
