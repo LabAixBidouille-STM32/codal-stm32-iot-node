@@ -57,7 +57,7 @@ namespace codal
    {
     .who_am_i      = LPS22HB_WHO_AM_I_VAL,
     .ifType        = 0,
-    .address       = LPS22HB_ADDRESS_DEFAULT,
+    .address       = LPS22HB_ADDRESS_HIGH,
     .spiDevice     = 0,
     .instance      = 0,
     .isInitialized = 0,
