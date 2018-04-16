@@ -91,10 +91,10 @@ extern uint8_t Sensor_IO_Read( void *handle, uint8_t ReadAddr, uint8_t *pBuffer,
 *******************************************************************************/
 LPS22HB_Error_et LPS22HB_ReadReg( void *handle, uint8_t RegAddr, uint16_t NumByteToRead, uint8_t *Data )
 {
-  if ( Sensor_IO_Read( handle, RegAddr, Data, NumByteToRead ) )
-    return LPS22HB_ERROR;
-  else
-    return LPS22HB_OK;
+ while ( NumByteToRead -- )
+  if ( Sensor_IO_Read( handle, RegAddr ++, Data ++, 1 ) )
+   return LPS22HB_ERROR;
+ return LPS22HB_OK;
 }
 
 /*******************************************************************************
@@ -107,10 +107,10 @@ LPS22HB_Error_et LPS22HB_ReadReg( void *handle, uint8_t RegAddr, uint16_t NumByt
 *******************************************************************************/
 LPS22HB_Error_et LPS22HB_WriteReg( void *handle, uint8_t RegAddr, uint16_t NumByteToWrite, uint8_t *Data )
 {
-  if ( Sensor_IO_Write( handle, RegAddr, Data, NumByteToWrite ) )
-    return LPS22HB_ERROR;
-  else
-    return LPS22HB_OK;
+ while ( NumByteToWrite -- )
+  if ( Sensor_IO_Write( handle, RegAddr ++, Data ++, 1 ) )
+   return LPS22HB_ERROR;
+ return LPS22HB_OK;
 }
 
 /**
@@ -287,7 +287,7 @@ LPS22HB_Error_et LPS22HB_Set_LowPassFilterCutoff(void *handle, LPS22HB_LPF_Cutof
 
 /**
 * @brief  Set Block Data Mode
-* @detail It is recommended to set BDU bit to ‘1’.
+* @detail It is recommended to set BDU bit to ï¿½1ï¿½.
 * @detail This feature avoids reading LSB and MSB related to different samples.
 * @param  *handle Device handle.
 * @param  LPS22HB_BDU_CONTINUOUS_UPDATE, LPS22HB_BDU_NO_UPDATE
@@ -445,8 +445,8 @@ LPS22HB_Error_et LPS22HB_MemoryBoot(void *handle)
 
 /**
 * @brief   Software Reset ann Reboot Memory Content.
-* @detail  The device is reset to the power on configuration if the SWRESET bit is set to ‘1’
- + and BOOT is set to ‘1’; Self-clearing upon completion.
+* @detail  The device is reset to the power on configuration if the SWRESET bit is set to ï¿½1ï¿½
+ + and BOOT is set to ï¿½1ï¿½; Self-clearing upon completion.
 * @param  *handle Device handle.
 * @retval Error Code [LPS22HB_ERROR, LPS22HB_OK]
 */
@@ -812,7 +812,7 @@ LPS22HB_Error_et LPS22HB_ResetAutoRifP(void *handle)
 
 /*
 * @brief  Set AutoZero Function bit
-* @detail When set to ‘1’, the actual pressure output is copied in the REF_P reg (@0x15..0x17)
+* @detail When set to ï¿½1ï¿½, the actual pressure output is copied in the REF_P reg (@0x15..0x17)
 * @param  *handle Device handle.
 * @retval  Error Code [LPS22HB_ERROR, LPS22HB_OK]
 */
@@ -1022,7 +1022,7 @@ LPS22HB_Error_et LPS22HB_Get_DataStatus(void *handle, LPS22HB_DataStatus_st* dat
 
 /**
 * @brief  Get the LPS22HB raw presure value
-* @detail   The data are expressed as PRESS_OUT_H/_L/_XL in 2’s complement.
+* @detail   The data are expressed as PRESS_OUT_H/_L/_XL in 2ï¿½s complement.
             Pout(hPA)=PRESS_OUT / 4096
 * @param  *handle Device handle.
 * @param  The buffer to empty with the pressure raw value
@@ -1052,7 +1052,7 @@ LPS22HB_Error_et LPS22HB_Get_RawPressure(void *handle, int32_t *raw_press)
 
 /**
 * @brief    Get the LPS22HB Pressure value in hPA.
-* @detail   The data are expressed as PRESS_OUT_H/_L/_XL in 2’s complement.
+* @detail   The data are expressed as PRESS_OUT_H/_L/_XL in 2ï¿½s complement.
             Pout(hPA)=PRESS_OUT / 4096
 * @param  *handle Device handle.
 * @param      The buffer to empty with the pressure value that must be divided by 100 to get the value in hPA
@@ -1072,7 +1072,7 @@ LPS22HB_Error_et LPS22HB_Get_Pressure(void *handle, int32_t* Pout)
 
 /**
 * @brief    Get the Raw Temperature value.
-* @detail   Temperature data are expressed as TEMP_OUT_H&TEMP_OUT_L as 2’s complement number.
+* @detail   Temperature data are expressed as TEMP_OUT_H&TEMP_OUT_L as 2ï¿½s complement number.
 *            Tout(degC)=TEMP_OUT/100
 * @param  *handle Device handle.
 * @param     Buffer to empty with the temperature raw tmp.
@@ -1096,11 +1096,11 @@ LPS22HB_Error_et LPS22HB_Get_RawTemperature(void *handle, int16_t* raw_data)
 
 
 /**
-* @brief    Get the Temperature value in °C.
-* @detail   Temperature data are expressed as TEMP_OUT_H&TEMP_OUT_L as 2’s complement number.
+* @brief    Get the Temperature value in ï¿½C.
+* @detail   Temperature data are expressed as TEMP_OUT_H&TEMP_OUT_L as 2ï¿½s complement number.
 *           Tout(degC)=TEMP_OUT/100
 * @param  *handle Device handle.
-* @param Buffer to empty with the temperature value that must be divided by 10 to get the value in °C
+* @param Buffer to empty with the temperature value that must be divided by 10 to get the value in ï¿½C
 * @retval  Error Code [LPS22HB_ERROR, LPS22HB_OK]
 */
 LPS22HB_Error_et LPS22HB_Get_Temperature(void *handle, int16_t* Tout)
@@ -1442,9 +1442,9 @@ LPS22HB_Error_et LPS22HB_Set_GenericConfig(void *handle, LPS22HB_ConfigTypeDef_s
     return LPS22HB_ERROR;
 
   /* BDU bit is used to inhibit the output registers update between the reading of upper and
-  lower register parts. In default mode (BDU = ‘0’), the lower and upper register parts are
+  lower register parts. In default mode (BDU = ï¿½0ï¿½), the lower and upper register parts are
   updated continuously. If it is not sure to read faster than output data rate, it is recommended
-  to set BDU bit to ‘1’. In this way, after the reading of the lower (upper) register part, the
+  to set BDU bit to ï¿½1ï¿½. In this way, after the reading of the lower (upper) register part, the
   content of that output registers is not updated until the upper (lower) part is read too.
   This feature avoids reading LSB and MSB related to different samples.*/
 
