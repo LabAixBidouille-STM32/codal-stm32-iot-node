@@ -62,12 +62,12 @@ int STM32IotNodeTemperature::configure( )
 {
  if ( !samplePeriod )
   samplePeriod = 1;
- float Value = 1000.0f / ( float ) samplePeriod;
+ float Value = 10.0f / ( float ) samplePeriod;
  if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
  if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
- samplePeriod = 1000.0f / ( float ) Value;
+ samplePeriod = 10.0f / ( float ) Value;
  return DEVICE_OK;
 }
 
