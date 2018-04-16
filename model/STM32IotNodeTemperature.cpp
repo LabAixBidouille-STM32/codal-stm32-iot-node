@@ -87,6 +87,7 @@ int STM32IotNodeTemperature::requestUpdate()
 {
  if ( !DrvContext.isInitialized )
  {
+  sample = 17.2;
   ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
   STM32IotNodeTemperature::configure();
   ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
@@ -94,8 +95,7 @@ int STM32IotNodeTemperature::requestUpdate()
  float Data;
  if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_Temp( &DrvContext, &Data ) == COMPONENT_OK )
  {
-  Data = 2.4;
-  sample = ( uint16_t ) ( Data * 10.0 );
+//  sample = ( uint16_t ) ( Data * 10.0 );
   return DEVICE_OK;
  }
  return DEVICE_I2C_ERROR;
