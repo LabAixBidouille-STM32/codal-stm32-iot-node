@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "CodalConfig.h"
 #include "STM32IotNode.h"
-#include "STM32IotNodeTemperature.h"
+#include "STM32IotNodeHumidity.h"
 
 namespace codal
 {
@@ -41,35 +41,33 @@ namespace codal
   * Create a representation of the accelerometer on the STM32 IOT node
   *
   */
-STM32IotNodeTemperature::STM32IotNodeTemperature( STM32IotNodeI2C& i2c )
+STM32IotNodeHumidity::STM32IotNodeHumidity( STM32IotNodeI2C& i2c )
 : _i2c( i2c )
 {
  HTS221_Combo_Data[ 0 ].isHumInitialized = 0;
- HTS221_Combo_Data[ 0 ].isTempInitialized = 0;
  HTS221_Combo_Data[ 0 ].isHumEnabled = 0;
- HTS221_Combo_Data[ 0 ].isTempEnabled = 0;
 }
 
 /**
- * Configures the temperature for celsius range defined
+ * Configures the humidity for celsius range defined
  * in this object. The nearest values are chosen to those defined
  * that are supported by the hardware. The instance variables are then
  * updated to reflect reality.
  *
- * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the temperature could not be configured.
+ * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the humidity could not be configured.
  *
  * @note This method should be overidden by the hardware driver to implement the requested
  * changes in hardware.
  */
 
-int STM32IotNodeTemperature::configure( )
+int STM32IotNodeHumidity::configure( )
 {
  if ( !samplePeriod )
   samplePeriod = 1;
  float Value = 1000.0f / ( float ) samplePeriod;
- if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
+ if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
- if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
+ if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
  samplePeriod = 1000.0f / ( float ) Value;
  return DEVICE_OK;
@@ -87,16 +85,16 @@ int STM32IotNodeTemperature::configure( )
  * changes in hardware.
  */
 
-int STM32IotNodeTemperature::requestUpdate()
+int STM32IotNodeHumidity::requestUpdate()
 {
  if ( !DrvContext.isInitialized )
  {
-   ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
-  STM32IotNodeTemperature::configure();
-  ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
+   ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
+  STM32IotNodeHumidity::configure();
+  ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
  }
  float Data;
- if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_Temp( &DrvContext, &Data ) == COMPONENT_OK )
+ if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Temp( &DrvContext, &Data ) == COMPONENT_OK )
  {
   sample = ( uint16_t ) ( Data * 10.0 );
   return DEVICE_OK;

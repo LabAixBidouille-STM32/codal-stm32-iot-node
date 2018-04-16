@@ -45,6 +45,7 @@ DEALINGS IN THE SOFTWARE.
 #include "STM32IotNodeGyroscope.h"
 #include "STM32IotNodeI2C.h"
 #include "STM32IotNodeIO.h"
+#include "STM32IotNodeHumidity.h"
 #include "STM32IotNodeTemperature.h"
 #include "CodalFiber.h"
 #include "MessageBus.h"
@@ -73,6 +74,7 @@ namespace codal
             STM32IotNodeI2C             i2c;
             STM32IotNodeAccelerometer   accelerometer;
             STM32IotNodeGyroscope       gyroscope;
+            STM32IotNodeHumidity        humidity;
             STM32IotNodeTemperature     temperature;
             Button                      buttonA;
 
