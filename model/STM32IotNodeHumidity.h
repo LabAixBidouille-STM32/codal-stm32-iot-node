@@ -79,11 +79,6 @@ namespace codal
    protected:
 
     /**
-     * Read the value from underlying hardware.
-     */
-    virtual int readValue();
-
-    /**
      * Configures the humidity for celsius range and sample rate defined
      * in this object. The nearest values are chosen to those defined
      * that are supported by the hardware. The instance variables are then
@@ -95,6 +90,11 @@ namespace codal
      * changes in hardware.
      */
     virtual int configure();
+
+    /**
+     * Read the value from underlying hardware.
+     */
+    virtual int readValue();
 
     };
 }

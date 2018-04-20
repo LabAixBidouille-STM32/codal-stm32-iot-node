@@ -55,8 +55,6 @@ STM32IotNodeAccelerometer::STM32IotNodeAccelerometer( STM32IotNodeI2C& i2c, coda
  *
  * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the accelerometer could not be configured.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 int STM32IotNodeAccelerometer::configure( )
 {
@@ -87,8 +85,6 @@ int STM32IotNodeAccelerometer::configure( )
  *
  * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 int STM32IotNodeAccelerometer::requestUpdate()
 {

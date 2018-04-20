@@ -56,8 +56,6 @@ STM32IotNodeHumidity::STM32IotNodeHumidity( STM32IotNodeI2C& i2c )
  *
  * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the humidity could not be configured.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 
 int STM32IotNodeHumidity::configure( )
@@ -79,10 +77,8 @@ int STM32IotNodeHumidity::configure( )
  * (it normally happens in the background when the scheduler is idle), but a check is performed
  * if the user explicitly requests up to date data.
  *
- * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
+ * @return The value on success, DEVICE_I2C_ERROR if the update fails.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 
 int STM32IotNodeHumidity::readValue()
@@ -95,9 +91,7 @@ int STM32IotNodeHumidity::readValue()
  }
  float Data;
  if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Hum( &DrvContext, &Data ) == COMPONENT_OK )
- {
   return ( int ) ( Data * 10.0 );
- }
  return DEVICE_I2C_ERROR;
 }
 

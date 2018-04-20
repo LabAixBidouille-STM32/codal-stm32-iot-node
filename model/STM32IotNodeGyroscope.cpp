@@ -55,8 +55,6 @@ STM32IotNodeGyroscope::STM32IotNodeGyroscope( STM32IotNodeI2C& i2c, codal::Coord
  *
  * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the accelerometer could not be configured.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 int STM32IotNodeGyroscope::configure( )
 {
@@ -87,8 +85,6 @@ int STM32IotNodeGyroscope::configure( )
  *
  * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 int STM32IotNodeGyroscope::requestUpdate()
 {

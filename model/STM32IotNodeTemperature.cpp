@@ -42,8 +42,10 @@ namespace codal
   *
   */
 STM32IotNodeTemperature::STM32IotNodeTemperature( STM32IotNodeI2C& i2c )
-: _i2c( i2c )
+:  codal::Sensor(DEVICE_ID_THERMOMETER)
+, _i2c( i2c )
 {
+    updateSample( );
 }
 
 /**
@@ -54,8 +56,6 @@ STM32IotNodeTemperature::STM32IotNodeTemperature( STM32IotNodeI2C& i2c )
  *
  * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the temperature could not be configured.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 
 int STM32IotNodeTemperature::configure( )
@@ -77,10 +77,8 @@ int STM32IotNodeTemperature::configure( )
  * (it normally happens in the background when the scheduler is idle), but a check is performed
  * if the user explicitly requests up to date data.
  *
- * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
+ * @return The value on success, DEVICE_I2C_ERROR if the update fails.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 
 int STM32IotNodeTemperature::requestUpdate()
@@ -93,10 +91,7 @@ int STM32IotNodeTemperature::requestUpdate()
  }
  float Data;
  if ( ( ( TEMPERATURE_Drv_t* ) DrvContext.pVTable )->Get_Temp( &DrvContext, &Data ) == COMPONENT_OK )
- {
-  sample = ( uint16_t ) ( Data * 10.0 );
-  return DEVICE_OK;
- }
+  return ( int ) ( Data * 10.0 );
  return DEVICE_I2C_ERROR;
 }
 

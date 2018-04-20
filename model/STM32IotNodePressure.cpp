@@ -42,8 +42,10 @@ namespace codal
   *
   */
 STM32IotNodePressure::STM32IotNodePressure( STM32IotNodeI2C& i2c )
-: _i2c( i2c )
+:  codal::Sensor(DEVICE_ID_PRESSURE)
+, _i2c( i2c )
 {
+    updateSample( );
 }
 
 /**
@@ -54,8 +56,6 @@ STM32IotNodePressure::STM32IotNodePressure( STM32IotNodeI2C& i2c )
  *
  * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the pressure could not be configured.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 
 int STM32IotNodePressure::configure( )
@@ -77,10 +77,8 @@ int STM32IotNodePressure::configure( )
  * (it normally happens in the background when the scheduler is idle), but a check is performed
  * if the user explicitly requests up to date data.
  *
- * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
+ * @return The value on success, DEVICE_I2C_ERROR if the update fails.
  *
- * @note This method should be overidden by the hardware driver to implement the requested
- * changes in hardware.
  */
 
 int STM32IotNodePressure::requestUpdate()
@@ -93,10 +91,7 @@ int STM32IotNodePressure::requestUpdate()
  }
  float Data;
  if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Hum( &DrvContext, &Data ) == COMPONENT_OK )
- {
-  sample = ( uint16_t ) ( Data );
-  return DEVICE_OK;
- }
+  return ( int ) ( Data );
  return DEVICE_I2C_ERROR;
 }
 

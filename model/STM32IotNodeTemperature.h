@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 #define STM32_IOT_NODE_TEMP_H
 
 #include "CodalConfig.h"
-#include "Temperature.h"
+#include "Sensor.h"
 #include "MbedPin.h"
 
 #include "STM32IotNodeI2C.h"
@@ -39,7 +39,7 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodeTemperature : protected codal::Temperature
+ class STM32IotNodeTemperature : public codal::Sensor
  {
 
    HTS221_T_Data_t HTS221_T_Data =
@@ -76,10 +76,6 @@ namespace codal
     */
     STM32IotNodeTemperature( STM32IotNodeI2C& i2c );
 
-    using codal::Temperature::getPeriod;
-    using codal::Temperature::getRange;
-    using codal::Temperature::getSample;
-
    protected:
 
     /**
@@ -96,17 +92,10 @@ namespace codal
     virtual int configure();
 
     /**
-     * Poll to see if new data is available from the hardware. If so, update it.
-     * n.b. it is not necessary to explicitly call this function to update data
-     * (it normally happens in the background when the scheduler is idle), but a check is performed
-     * if the user explicitly requests up to date data.
-     *
-     * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
-     *
-     * @note This method should be overidden by the hardware driver to implement the requested
-     * changes in hardware.
+     * Read the value from underlying hardware.
      */
-    virtual int requestUpdate();
+    virtual int readValue();
+
 
     };
 }
