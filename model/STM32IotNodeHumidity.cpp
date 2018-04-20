@@ -62,7 +62,7 @@ STM32IotNodeHumidity::STM32IotNodeHumidity( STM32IotNodeI2C& i2c )
 int STM32IotNodeHumidity::configure( )
 {
  if ( !samplePeriod )
-  samplePeriod = 1;
+  samplePeriod = 100;
  float Value = 1000.0f / ( float ) samplePeriod;
  if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
