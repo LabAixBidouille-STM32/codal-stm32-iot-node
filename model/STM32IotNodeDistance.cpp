@@ -45,13 +45,7 @@ STM32IotNodeDistance::STM32IotNodeDistance( STM32IotNodeI2C& i2c )
 :  codal::Sensor(DEVICE_ID_DISTANCE)
 , _i2c( i2c )
 {
- VL53L0X_Dev.I2cDevAddr = VL53L0X_ADDRESS_DEFAULT;
-
- DrvContext.who_am_i      = 0xEE;
- DrvContext.address       = VL53L0X_ADDRESS_DEFAULT;
- DrvContext.pData         = ( void * ) &VL53L0X_Dev;
- DrvContext.pVTable       = ( void * ) &VL53L0X_Drv;
-
+    VL53L0X_Dev.I2cDevAddr = VL53L0X_ADDRESS_DEFAULT;
     updateSample( );
 }
 
