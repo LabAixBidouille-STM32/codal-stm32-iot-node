@@ -47,7 +47,7 @@ namespace codal
 
    VL53L0X_Dev_t VL53L0X_Dev =
    {
-//    .Data       = { 0 },
+    .Data       = { 0 },
     .I2cDevAddr = VL53L0X_ADDRESS_DEFAULT,
    };
 
