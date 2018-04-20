@@ -60,14 +60,14 @@ STM32IotNodeDistance::STM32IotNodeDistance( STM32IotNodeI2C& i2c )
 
 int STM32IotNodeDistance::configure( )
 {
- if ( !samplePeriod )
-  samplePeriod = 1;
- float Value = 1000.0f / ( float ) samplePeriod;
- if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
-  return DEVICE_I2C_ERROR;
- if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
-  return DEVICE_I2C_ERROR;
- samplePeriod = 1000.0f / ( float ) Value;
+// if ( !samplePeriod )
+//  samplePeriod = 1;
+// float Value = 1000.0f / ( float ) samplePeriod;
+// if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
+//  return DEVICE_I2C_ERROR;
+// if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
+//  return DEVICE_I2C_ERROR;
+// samplePeriod = 1000.0f / ( float ) Value;
  return DEVICE_OK;
 }
 
