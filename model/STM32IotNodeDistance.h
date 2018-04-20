@@ -23,8 +23,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef STM32_IOT_NODE_HUMIDITY_H
-#define STM32_IOT_NODE_HUMIDITY_H
+#ifndef STM32_IOT_NODE_DISTANCE_H
+#define STM32_IOT_NODE_DISTANCE_H
 
 #include "CodalConfig.h"
 #include "Sensor.h"
@@ -39,17 +39,17 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodeHumidity : public codal::Sensor
+ class STM32IotNodeDistance : public codal::Sensor
  {
 
-   HTS221_H_Data_t HTS221_H_Data =
+   HTS221_T_Data_t HTS221_T_Data =
    {
     .comboData = &HTS221_Combo_Data[ 0 ],
    };
 
-   HUMIDITY_Data_t HUMIDITY_Data =
+   DISTANCE_Data_t DISTANCE_Data =
    {
-    .pComponentData = ( void * ) &HTS221_H_Data,
+    .pComponentData = ( void * ) &HTS221_T_Data,
     .pExtData       = 0,
    };
 
@@ -63,8 +63,29 @@ namespace codal
     .isInitialized = 0,
     .isEnabled     = 0,
     .isCombo       = 0,
-    .pData         = ( void * ) &HUMIDITY_Data,
-    .pVTable       = ( void * ) &HTS221_H_Drv,
+    .pData         = ( void * ) &DISTANCE_Data,
+    .pVTable       = ( void * ) &HTS221_T_Drv,
+    .pExtVTable    = 0,
+   };
+
+   VL53L0X_Dev_t VL53L0X_Dev =
+   {
+    .Data       = { 0 },
+    .I2cDevAddr = VL53L0X_ADDRESS_DEFAULT,
+   };
+
+   DrvContextTypeDef DrvContext =
+   {
+    .who_am_i      = 0xEE,
+    .ifType        = 0,
+    .address       = VL53L0X_ADDRESS_DEFAULT,
+    .spiDevice     = 0,
+    .instance      = 0,
+    .isInitialized = 0,
+    .isEnabled     = 0,
+    .isCombo       = 0,
+    .pData         = ( void * ) &VL53L0X_Dev,
+    .pVTable       = ( void * ) &VL53L0X_Drv,
     .pExtVTable    = 0,
    };
 
@@ -74,17 +95,17 @@ namespace codal
    /**
     * Constructor.
     */
-    STM32IotNodeHumidity( STM32IotNodeI2C& i2c );
+    STM32IotNodeDistance( STM32IotNodeI2C& i2c );
 
    protected:
 
     /**
-     * Configures the humidity for celsius range and sample rate defined
+     * Configures the temperature for celsuiu range and sample rate defined
      * in this object. The nearest values are chosen to those defined
      * that are supported by the hardware. The instance variables are then
      * updated to reflect reality.
      *
-     * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the humidity could not be configured.
+     * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the temperature could not be configured.
      *
      * @note This method should be overidden by the hardware driver to implement the requested
      * changes in hardware.
@@ -95,6 +116,7 @@ namespace codal
      * Read the value from underlying hardware.
      */
     virtual int readValue();
+
 
     };
 }

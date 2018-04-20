@@ -24,13 +24,13 @@ DEALINGS IN THE SOFTWARE.
 */
 
 /**
-  * Class definition for pressure.
-  * Represents the pressure on the STM IOT node.
+  * Class definition for temperature.
+  * Represents the temperature on the STM IOT node.
   */
 
 #include "CodalConfig.h"
 #include "STM32IotNode.h"
-#include "STM32IotNodePressure.h"
+#include "STM32IotNodeDistance.h"
 
 namespace codal
 {
@@ -38,34 +38,34 @@ namespace codal
 /**
   * Constructor.
   *
-  * Create a representation of the pressure on the STM32 IOT node
+  * Create a representation of the temperature on the STM32 IOT node
   *
   */
-STM32IotNodePressure::STM32IotNodePressure( STM32IotNodeI2C& i2c )
-:  codal::Sensor(DEVICE_ID_PRESSURE)
+STM32IotNodeDistance::STM32IotNodeDistance( STM32IotNodeI2C& i2c )
+:  codal::Sensor(DEVICE_ID_DISTANCE)
 , _i2c( i2c )
 {
     updateSample( );
 }
 
 /**
- * Configures the pressure range defined
+ * Configures the temperature for celsius range defined
  * in this object. The nearest values are chosen to those defined
  * that are supported by the hardware. The instance variables are then
  * updated to reflect reality.
  *
- * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the pressure could not be configured.
+ * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the temperature could not be configured.
  *
  */
 
-int STM32IotNodePressure::configure( )
+int STM32IotNodeDistance::configure( )
 {
  if ( !samplePeriod )
   samplePeriod = 1;
  float Value = 1000.0f / ( float ) samplePeriod;
- if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
+ if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
- if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
+ if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
   return DEVICE_I2C_ERROR;
  samplePeriod = 1000.0f / ( float ) Value;
  return DEVICE_OK;
@@ -81,17 +81,17 @@ int STM32IotNodePressure::configure( )
  *
  */
 
-int STM32IotNodePressure::readValue()
+int STM32IotNodeDistance::readValue()
 {
  if ( !DrvContext.isInitialized )
  {
-   ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
-  STM32IotNodePressure::configure();
-  ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
+   ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
+  STM32IotNodeDistance::configure();
+  ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
  }
  float Data;
- if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Hum( &DrvContext, &Data ) == COMPONENT_OK )
-  return ( int ) ( Data );
+ if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Get_Dist( &DrvContext, &Data ) == COMPONENT_OK )
+  return ( int ) ( Data * 10.0 );
  return DEVICE_I2C_ERROR;
 }
 
