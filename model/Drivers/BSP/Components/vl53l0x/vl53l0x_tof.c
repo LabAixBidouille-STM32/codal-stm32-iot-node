@@ -252,6 +252,7 @@ VL53L0X_Error VL53L0X_PollingDelay(VL53L0X_DEV Dev) {
     VL53L0X_Error status = VL53L0X_ERROR_NONE;
 
     // do nothing
+    void HAL_Delay( uint32_t Delay );
     VL53L0X_OsDelay();
     return status;
 }
