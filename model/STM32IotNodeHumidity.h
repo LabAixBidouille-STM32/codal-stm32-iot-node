@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 #define STM32_IOT_NODE_HUMIDITY_H
 
 #include "CodalConfig.h"
-#include "Humidity.h"
+#include "Sensor.h"
 #include "MbedPin.h"
 
 #include "STM32IotNodeI2C.h"
