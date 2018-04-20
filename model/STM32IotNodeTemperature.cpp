@@ -81,7 +81,7 @@ int STM32IotNodeTemperature::configure( )
  *
  */
 
-int STM32IotNodeTemperature::requestUpdate()
+int STM32IotNodeTemperature::readValue()
 {
  if ( !DrvContext.isInitialized )
  {

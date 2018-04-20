@@ -81,7 +81,7 @@ int STM32IotNodePressure::configure( )
  *
  */
 
-int STM32IotNodePressure::requestUpdate()
+int STM32IotNodePressure::readValue()
 {
  if ( !DrvContext.isInitialized )
  {
