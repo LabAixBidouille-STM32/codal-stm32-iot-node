@@ -39,7 +39,7 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodeHumidity : protected codal::Humidity
+ class STM32IotNodeHumidity : public codal::Sensor
  {
 
    HTS221_H_Data_t HTS221_H_Data =
@@ -76,14 +76,15 @@ namespace codal
     */
     STM32IotNodeHumidity( STM32IotNodeI2C& i2c );
 
-    using codal::Humidity::getPeriod;
-    using codal::Humidity::getRange;
-    using codal::Humidity::getSample;
-
    protected:
 
     /**
-     * Configures the humidity for celsuiu range and sample rate defined
+     * Read the value from underlying hardware.
+     */
+    virtual int readValue();
+
+    /**
+     * Configures the humidity for celsius range and sample rate defined
      * in this object. The nearest values are chosen to those defined
      * that are supported by the hardware. The instance variables are then
      * updated to reflect reality.
@@ -94,19 +95,6 @@ namespace codal
      * changes in hardware.
      */
     virtual int configure();
-
-    /**
-     * Poll to see if new data is available from the hardware. If so, update it.
-     * n.b. it is not necessary to explicitly call this function to update data
-     * (it normally happens in the background when the scheduler is idle), but a check is performed
-     * if the user explicitly requests up to date data.
-     *
-     * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
-     *
-     * @note This method should be overidden by the hardware driver to implement the requested
-     * changes in hardware.
-     */
-    virtual int requestUpdate();
 
     };
 }

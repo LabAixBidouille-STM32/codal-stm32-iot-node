@@ -83,7 +83,7 @@ int STM32IotNodeHumidity::configure( )
  * changes in hardware.
  */
 
-int STM32IotNodeHumidity::requestUpdate()
+int STM32IotNodeHumidity::readValue()
 {
  if ( !DrvContext.isInitialized )
  {
