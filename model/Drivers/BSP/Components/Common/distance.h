@@ -102,39 +102,39 @@ typedef struct
   void *pExtData;       /* Other data. */
 } DISTANCE_Data_t;
 
-typedef enum
-{
-  NORMAL_MODE,
-  HIGH_RES_MODE,
-  LOW_PWR_MODE
-} OP_MODE_t;
+//typedef enum
+//{
+//  NORMAL_MODE,
+//  HIGH_RES_MODE,
+//  LOW_PWR_MODE
+//} OP_MODE_t;
 
-typedef enum
-{
-  INT1_DRDY_DISABLED,
-  INT1_DRDY_ENABLED
-} INT1_DRDY_CONFIG_t;
+//typedef enum
+//{
+//  INT1_DRDY_DISABLED,
+//  INT1_DRDY_ENABLED
+//} INT1_DRDY_CONFIG_t;
 
-typedef enum
-{
-  DRDY_PULSED,
-  DRDY_LATCHED
-} DRDY_MODE_t;
+//typedef enum
+//{
+//  DRDY_PULSED,
+//  DRDY_LATCHED
+//} DRDY_MODE_t;
 
 
 /**
  * @brief  DISTANCE hardware features status data structure definition
  */
-typedef struct
-{
-  unsigned int FreeFallStatus : 1;
-  unsigned int TapStatus : 1;
-  unsigned int DoubleTapStatus : 1;
-  unsigned int WakeUpStatus : 1;
-  unsigned int StepStatus : 1;
-  unsigned int TiltStatus : 1;
-  unsigned int D6DOrientationStatus : 1;
-} DISTANCE_Event_Status_t;
+//typedef struct
+//{
+//  unsigned int FreeFallStatus : 1;
+//  unsigned int TapStatus : 1;
+//  unsigned int DoubleTapStatus : 1;
+//  unsigned int WakeUpStatus : 1;
+//  unsigned int StepStatus : 1;
+//  unsigned int TiltStatus : 1;
+//  unsigned int D6DOrientationStatus : 1;
+//} DISTANCE_Event_Status_t;
 
 /**
  * @}
