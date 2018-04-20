@@ -95,8 +95,7 @@ int STM32IotNodeHumidity::readValue()
  float Data;
  if ( ( ( HUMIDITY_Drv_t* ) DrvContext.pVTable )->Get_Hum( &DrvContext, &Data ) == COMPONENT_OK )
  {
-  sample = ( uint16_t ) ( Data * 10.0 );
-  return DEVICE_OK;
+  return = ( int ) ( Data * 10.0 );
  }
  return DEVICE_I2C_ERROR;
 }
