@@ -32,7 +32,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include "STM32IotNodeI2C.h"
 
-#include "HTS221_Driver_HL.h"
+#include "../vl53l0x/VL53L0X_Driver_HL.h"
+#include "../vl53l0x/vl53l0x_def.h"
+#include "../vl53l0x/vl53l0x_api.h"
+#include "../vl53l0x/vl53l0x_tof.h"
 
 namespace codal
 {
@@ -41,32 +44,6 @@ namespace codal
    */
  class STM32IotNodeDistance : public codal::Sensor
  {
-
-   HTS221_T_Data_t HTS221_T_Data =
-   {
-    .comboData = &HTS221_Combo_Data[ 0 ],
-   };
-
-   DISTANCE_Data_t DISTANCE_Data =
-   {
-    .pComponentData = ( void * ) &HTS221_T_Data,
-    .pExtData       = 0,
-   };
-
-   DrvContextTypeDef DrvContext =
-   {
-    .who_am_i      = HTS221_WHO_AM_I_VAL,
-    .ifType        = 0,
-    .address       = HTS221_ADDRESS_DEFAULT,
-    .spiDevice     = 0,
-    .instance      = 0,
-    .isInitialized = 0,
-    .isEnabled     = 0,
-    .isCombo       = 0,
-    .pData         = ( void * ) &DISTANCE_Data,
-    .pVTable       = ( void * ) &HTS221_T_Drv,
-    .pExtVTable    = 0,
-   };
 
    VL53L0X_Dev_t VL53L0X_Dev =
    {
