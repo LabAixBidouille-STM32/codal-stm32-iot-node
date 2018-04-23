@@ -31,15 +31,15 @@ namespace codal
     /**
       * Class definition for I2C service, derived from codal.
       */
-    class STM32IotNodeI2C : protected codal::_mbed::I2C
+    class STM32IotNodeI2C : protected _mbed::I2C
     {
         public:
 
-        STM32IotNodeI2C(codal::Pin& sda, codal::Pin& scl)
-        : codal::_mbed::I2C( sda, scl )
+        STM32IotNodeI2C(Pin& sda, Pin& scl)
+        : _mbed::I2C( sda, scl )
         { }
 
-        using codal::_mbed::I2C::setFrequency;
+        using _mbed::I2C::setFrequency;
 
         int read(  uint32_t address, uint8_t reg, uint8_t* data, uint32_t len );
 

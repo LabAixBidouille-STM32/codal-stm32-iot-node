@@ -42,7 +42,7 @@ namespace codal
   *
   */
 STM32IotNodeTemperature::STM32IotNodeTemperature( STM32IotNodeI2C& i2c )
-:  codal::Sensor(DEVICE_ID_THERMOMETER)
+:  Sensor(DEVICE_ID_THERMOMETER)
 , _i2c( i2c )
 {
     updateSample( );

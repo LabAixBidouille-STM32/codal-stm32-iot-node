@@ -42,7 +42,7 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodeDistance : public codal::Sensor
+ class STM32IotNodeDistance : public Sensor
  {
 
    VL53L0X_Dev_t VL53L0X_Dev;

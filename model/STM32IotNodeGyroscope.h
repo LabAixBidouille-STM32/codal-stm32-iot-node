@@ -39,7 +39,7 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodeGyroscope : protected codal::Gyroscope
+ class STM32IotNodeGyroscope : protected Gyroscope
  {
    LSM6DSL_G_Data_t LSM6DSL_G_Data =
    {
@@ -74,14 +74,14 @@ namespace codal
    /**
     * Constructor.
     */
-    STM32IotNodeGyroscope( STM32IotNodeI2C& i2c, codal::CoordinateSpace& coordinateSpace );
+    STM32IotNodeGyroscope( STM32IotNodeI2C& i2c, CoordinateSpace& coordinateSpace );
 
-    using codal::Gyroscope::getPeriod;
-    using codal::Gyroscope::getRange;
-    using codal::Gyroscope::getSample;
-    using codal::Gyroscope::getX;
-    using codal::Gyroscope::getY;
-    using codal::Gyroscope::getZ;
+    using Gyroscope::getPeriod;
+    using Gyroscope::getRange;
+    using Gyroscope::getSample;
+    using Gyroscope::getX;
+    using Gyroscope::getY;
+    using Gyroscope::getZ;
 
    protected:
 

@@ -39,7 +39,7 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodeHumidity : public codal::Sensor
+ class STM32IotNodeHumidity : public Sensor
  {
 
    HTS221_H_Data_t HTS221_H_Data =

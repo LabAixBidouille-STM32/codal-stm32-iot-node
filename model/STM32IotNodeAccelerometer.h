@@ -39,7 +39,7 @@ namespace codal
   /**
    * Represents the accelerometer on the STM32 IOT node.
    */
- class STM32IotNodeAccelerometer : protected codal::Accelerometer
+ class STM32IotNodeAccelerometer : protected Accelerometer
  {
    LSM6DSL_X_Data_t LSM6DSL_X_Data =
    {
@@ -74,18 +74,18 @@ namespace codal
    /**
     * Constructor.
     */
-    STM32IotNodeAccelerometer( STM32IotNodeI2C& i2c, codal::CoordinateSpace& coordinateSpace );
+    STM32IotNodeAccelerometer( STM32IotNodeI2C& i2c, CoordinateSpace& coordinateSpace );
 
-    using codal::Accelerometer::getPeriod;
-    using codal::Accelerometer::getRange;
-    using codal::Accelerometer::getSample;
-    using codal::Accelerometer::getX;
-    using codal::Accelerometer::getY;
-    using codal::Accelerometer::getZ;
-    using codal::Accelerometer::getPitch;
-    using codal::Accelerometer::getPitchRadians;
-    using codal::Accelerometer::getRoll;
-    using codal::Accelerometer::getRollRadians;
+    using Accelerometer::getPeriod;
+    using Accelerometer::getRange;
+    using Accelerometer::getSample;
+    using Accelerometer::getX;
+    using Accelerometer::getY;
+    using Accelerometer::getZ;
+    using Accelerometer::getPitch;
+    using Accelerometer::getPitchRadians;
+    using Accelerometer::getRoll;
+    using Accelerometer::getRollRadians;
 
    protected:
 

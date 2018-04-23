@@ -42,7 +42,7 @@ namespace codal
   *
   */
 STM32IotNodeDistance::STM32IotNodeDistance( STM32IotNodeI2C& i2c )
-:  codal::Sensor(DEVICE_ID_DISTANCE)
+:  Sensor(DEVICE_ID_DISTANCE)
 , _i2c( i2c )
 {
     VL53L0X_Dev.I2cDevAddr = VL53L0X_ADDRESS_DEFAULT;

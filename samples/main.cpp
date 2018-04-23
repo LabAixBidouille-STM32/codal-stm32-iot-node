@@ -8,7 +8,7 @@ void
 onClick(Event)
 {
  IotNode.serial.printf("CLICK\r\n");
- codal::Sample3D Sample = IotNode.gyroscope.getSample( );
+ Sample3D Sample = IotNode.gyroscope.getSample( );
  IotNode.serial.printf("   x: 0x%04X = %d\n", Sample.x, Sample.x );
  IotNode.serial.printf("   y: 0x%04X = %d\n", Sample.y, Sample.y );
  IotNode.serial.printf("   z: 0x%04X = %d\n", Sample.z, Sample.z );
@@ -31,7 +31,7 @@ main()
   int16_t SamplePressure    = IotNode.pressure.getValue( );
   int16_t SampleTemperature = IotNode.temperature.getValue( );
   IotNode.serial.printf("%d, %d, %d\n", SampleHumidity, SamplePressure, SampleTemperature );
-//  codal::Sample3D Sample = IotNode.gyroscope.getSample( );
+//  Sample3D Sample = IotNode.gyroscope.getSample( );
 //  IotNode.serial.printf("%d, %d, %d\n", Sample.x, Sample.y, Sample.z );
 //  IotNode.io.led.setDigitalValue(1);
 //  IotNode.sleep(200);

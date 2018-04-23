@@ -41,8 +41,8 @@ namespace codal
   * Create a representation of the accelerometer on the STM32 IOT node
   *
   */
-STM32IotNodeGyroscope::STM32IotNodeGyroscope( STM32IotNodeI2C& i2c, codal::CoordinateSpace& coordinateSpace )
-: codal::Gyroscope( coordinateSpace )
+STM32IotNodeGyroscope::STM32IotNodeGyroscope( STM32IotNodeI2C& i2c, CoordinateSpace& coordinateSpace )
+: Gyroscope( coordinateSpace )
 , _i2c( i2c )
 {
 }

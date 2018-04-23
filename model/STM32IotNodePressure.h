@@ -39,7 +39,7 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodePressure : public codal::Sensor
+ class STM32IotNodePressure : public Sensor
  {
 
    LPS22HB_P_Data_t LPS22HB_P_Data =

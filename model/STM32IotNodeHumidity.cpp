@@ -42,7 +42,7 @@ namespace codal
   *
   */
 STM32IotNodeHumidity::STM32IotNodeHumidity( STM32IotNodeI2C& i2c )
-:  codal::Sensor(DEVICE_ID_HUMIDITY)
+:  Sensor(DEVICE_ID_HUMIDITY)
 , _i2c( i2c )
 {
     updateSample( );
