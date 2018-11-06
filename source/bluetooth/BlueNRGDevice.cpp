@@ -73,7 +73,6 @@ BlueNRGDevice bluenrgDeviceInstance(BLUENRG_PIN_SPI_MOSI,
                                     BLUENRG_PIN_SPI_nCS,
                                     BLUENRG_PIN_SPI_RESET,
                                     BLUENRG_PIN_SPI_IRQ);
-
 /**
 * BLE-API requires an implementation of the following function in order to
 * obtain its transport handle.
@@ -124,8 +123,8 @@ BlueNRGDevice::BlueNRGDevice(codal::PinNumber mosi,
     HCI_Init();
 
     // Set the interrupt handler for the device
-    irq_.mode(PullDown); // set irq mode
-    irq_.rise(&HCI_Isr);
+    //irq_.mode(PullDown); // set irq mode
+    //irq_.rise(&HCI_Isr);
 }
 
 /**************************************************************************/
@@ -462,17 +461,17 @@ int32_t BlueNRGDevice::spiWrite(uint8_t* data1,
 
 bool BlueNRGDevice::dataPresent()
 {
-    return (irq_ == 1);
+    return false;
 }
 
 void BlueNRGDevice::disable_irq()
 {
-    irq_.disable_irq();
+    //irq_.disable_irq();
 }
 
 void BlueNRGDevice::enable_irq()
 {
-    irq_.enable_irq();
+    //irq_.enable_irq();
 }
 
 void BlueNRGDevice::processEvents() {

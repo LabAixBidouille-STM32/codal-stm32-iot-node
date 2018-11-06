@@ -1,5 +1,6 @@
 
 #include "stm32.h"
+#include "codal_target_hal.h"
 #include "ble_clock.h"
 
 const uint32_t CLOCK_SECOND = 1000;
