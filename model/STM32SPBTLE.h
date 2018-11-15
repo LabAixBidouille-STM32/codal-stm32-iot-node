@@ -2,9 +2,7 @@
 #define STM32_SPBTLE_H
 #include "BLE.h"
 
-class STM32SPBTLE : public BLE {
-
-};
+typedef BLE STM32SPBTLE;
 
 #endif
 
