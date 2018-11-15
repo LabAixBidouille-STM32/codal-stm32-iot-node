@@ -2,14 +2,12 @@
 #define STM32_IOT_NODE_H
 
 #include "CodalComponent.h"
-#include "CodalCompat.h"
 #include "CodalFiber.h"
 
 #include "NotifyEvents.h"
 #include "MessageBus.h"
 
 #include "STM32IotNodeIO.h"
-#include "STM32IotNodeTemperature.h"
 #include "STM32SPBTLE.h"
 #include "stm32l4xxTimer.h"
 #include "stm32l4xxSPI.h"
@@ -33,13 +31,16 @@ namespace codal
             MessageBus     messageBus;
 
             STM32IotNodeIO io;
-            STM32L4xxSPI spi;
-            STM32L4xxI2C i2c;
 
-            STM32SPBTLE ble;
+            STM32L4xxSPI spi1;//External on arduino stardard pins
+            STM32L4xxSPI spi3;//Internal used by BLE, SubGHz and wifi
 
-            STM32IotNodeTemperature temperature;
+            STM32L4xxI2C i2c1;//External on arduino stardard pins 
+            STM32L4xxI2C i2c2;//Internal only used by MEMS sensors 
 
+            
+            //BLE& ble;
+            
             /**
              * Constructor.
              */

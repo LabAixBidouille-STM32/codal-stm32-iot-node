@@ -12,7 +12,19 @@ static STM32IotNode *device_instance = NULL;
   * Create a representation of a device, which includes member variables
   * that represent various device drivers used to control aspects of the STM32 IOT node.
   */
-STM32IotNode::STM32IotNode() :timer(), messageBus(), io(), spi(io.miso, io.mosi, io.sclk), i2c(io.sda, io.scl), temperature(i2c)
+STM32IotNode::STM32IotNode()
+  : CodalComponent(), 
+    timer(), 
+    messageBus(), 
+    io(), 
+    spi1(io.miso, io.mosi, io.sclk), 
+    spi3(io.miso3, io.mosi3, io.sclk3),
+    i2c1(io.sda, io.scl),
+    i2c2(io.sda2, io.scl2)
+    
+
+
+    //ble(BLE::Instance())
 {
     // Clear our status
     status = 0;
@@ -50,9 +62,6 @@ int STM32IotNode::init()
         if(CodalComponent::components[i])
             CodalComponent::components[i]->init();
     }
-
-    // Seed our random number generator
-    //seedRandom();
 
     codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
     status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;
