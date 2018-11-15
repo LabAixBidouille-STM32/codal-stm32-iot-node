@@ -12,6 +12,7 @@
 #include "stm32l4xxTimer.h"
 #include "stm32l4xxSPI.h"
 #include "stm32l4xxI2C.h"
+#include "STM32IotNodeTemperature.h"
 
 // Status flag values
 #define DEVICE_INITIALIZED                    0x01
@@ -37,6 +38,8 @@ namespace codal
 
             STM32L4xxI2C i2c1;//External on arduino stardard pins 
             STM32L4xxI2C i2c2;//Internal only used by MEMS sensors 
+
+            STM32IotNodeTemperature temperature;
 
             
             //BLE& ble;

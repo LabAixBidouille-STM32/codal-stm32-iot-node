@@ -20,10 +20,8 @@ STM32IotNode::STM32IotNode()
     spi1(io.miso, io.mosi, io.sclk), 
     spi3(io.miso3, io.mosi3, io.sclk3),
     i2c1(io.sda, io.scl),
-    i2c2(io.sda2, io.scl2)
-    
-
-
+    i2c2(io.sda2, io.scl2),
+    temperature(i2c2)
     //ble(BLE::Instance())
 {
     // Clear our status
