@@ -1,5 +1,5 @@
-#ifndef STM32_IOT_NODE_ACCEL_H
-#define STM32_IOT_NODE_ACCEL_H
+#ifndef STM32_IOT_NODE_MAGNETOMETER_H
+#define STM32_IOT_NODE_MAGNETOMETER_H
 
 #include "CodalConfig.h"
 #include "codal-core/inc/driver-models/Compass.h"
