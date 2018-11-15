@@ -67,12 +67,19 @@ using namespace codal;
  */
 #include "bluenrg_targets.h"
 
-BlueNRGDevice bluenrgDeviceInstance(BLUENRG_PIN_SPI_MOSI,
-                                    BLUENRG_PIN_SPI_MISO,
-                                    BLUENRG_PIN_SPI_SCK,
-                                    BLUENRG_PIN_SPI_nCS,
-                                    BLUENRG_PIN_SPI_RESET,
-                                    BLUENRG_PIN_SPI_IRQ);
+STM32L4xxPin PIN_BLE_MOSI (ID_PIN_BLE_MOSI, BLUENRG_PIN_SPI_MOSI,  codal::PIN_CAPABILITY_DIGITAL);
+STM32L4xxPin PIN_BLE_MISO (ID_PIN_BLE_MISO, BLUENRG_PIN_SPI_MISO,  codal::PIN_CAPABILITY_DIGITAL);
+STM32L4xxPin PIN_BLE_SCLK (ID_PIN_BLE_SCLK, BLUENRG_PIN_SPI_SCK,   codal::PIN_CAPABILITY_DIGITAL);
+STM32L4xxPin PIN_BLE_CS   (ID_PIN_BLE_CS,   BLUENRG_PIN_SPI_nCS,   codal::PIN_CAPABILITY_DIGITAL);
+STM32L4xxPin PIN_BLE_RST  (ID_PIN_BLE_RST,  BLUENRG_PIN_SPI_RESET, codal::PIN_CAPABILITY_DIGITAL);
+STM32L4xxPin PIN_BLE_IRQ  (ID_PIN_BLE_IRQ,  BLUENRG_PIN_SPI_IRQ,   codal::PIN_CAPABILITY_DIGITAL);
+
+BlueNRGDevice bluenrgDeviceInstance(PIN_BLE_MOSI,
+                                    PIN_BLE_MISO,
+                                    PIN_BLE_SCLK,
+                                    PIN_BLE_CS  ,
+                                    PIN_BLE_RST ,
+                                    PIN_BLE_IRQ );
 /**
 * BLE-API requires an implementation of the following function in order to
 * obtain its transport handle.
@@ -94,19 +101,19 @@ createBLEInstance(void)
      * @param irq mbed pin for BlueNRG IRQ
 */
 /**************************************************************************/
-BlueNRGDevice::BlueNRGDevice(codal::PinNumber mosi,
-                             codal::PinNumber miso,
-                             codal::PinNumber sck,
-                             codal::PinNumber cs,
-                             codal::PinNumber rst,
-                             codal::PinNumber irq) 
+BlueNRGDevice::BlueNRGDevice(codal::STM32L4xxPin& mosi,
+                             codal::STM32L4xxPin& miso,
+                             codal::STM32L4xxPin& sck,
+                             codal::STM32L4xxPin& cs,
+                             codal::STM32L4xxPin& rst,
+                             codal::STM32L4xxPin& irq) 
     : isInitialized(false),
-    pinMosi(ID_PIN_BLE_MISO, miso, PIN_CAPABILITY_DIGITAL),
-    pinMiso(ID_PIN_BLE_MOSI, mosi, PIN_CAPABILITY_DIGITAL),
-    pinSck(ID_PIN_BLE_SCLK, sck, PIN_CAPABILITY_DIGITAL),
-    pinCs(ID_PIN_BLE_CS, cs, PIN_CAPABILITY_DIGITAL),
-    pinRst(ID_PIN_BLE_RST, rst, PIN_CAPABILITY_DIGITAL),
-    pinIrq(ID_PIN_BLE_IRQ, irq, PIN_CAPABILITY_DIGITAL),
+    pinMosi(mosi),
+    pinMiso(miso),
+    pinSck(sck),
+    pinCs(cs),
+    pinRst(rst),
+    pinIrq(irq),
     spi_(pinMosi, pinMiso, pinSck)
 {
     // Setup the spi for 8 bit data, low clock polarity,

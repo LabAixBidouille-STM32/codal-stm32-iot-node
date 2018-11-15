@@ -223,17 +223,12 @@ public:
      * The value of the BLE::InstanceID_t for the default BLE instance.
      */
     static const InstanceID_t DEFAULT_INSTANCE = 0;
-#ifndef YOTTA_CFG_BLE_INSTANCES_COUNT
+    
     /**
      * The number of permitted BLE instances for the application.
      */
     static const InstanceID_t NUM_INSTANCES = 1;
-#else
-    /**
-     * The number of permitted BLE instances for the application.
-     */
-    static const InstanceID_t NUM_INSTANCES = YOTTA_CFG_BLE_INSTANCES_COUNT;
-#endif
+
 
     /**
      * Get a reference to the BLE singleton corresponding to a given interface.

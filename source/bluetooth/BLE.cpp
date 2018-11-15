@@ -33,48 +33,18 @@ BLE::initImplementation(FunctionPointerWithContext<InitializationCompleteCallbac
  * The following macros result in translating the above config into a static
  * array: instanceConstructors.
  */
-#ifdef YOTTA_CFG_BLE_INSTANCES_COUNT
-#define CONCATENATE(A, B) A ## B
-#define EXPAND(X) X /* this adds a level of indirection needed to allow macro-expansion following a token-paste operation (see use of CONCATENATE() below). */
-
-#define INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_1 YOTTA_CFG_BLE_INSTANCES_0_INITIALIZER
-#define INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_2 INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_1, YOTTA_CFG_BLE_INSTANCES_1_INITIALIZER
-#define INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_3 INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_2, YOTTA_CFG_BLE_INSTANCES_2_INITIALIZER
-#define INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_4 INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_3, YOTTA_CFG_BLE_INSTANCES_3_INITIALIZER
-#define INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_5 INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_4, YOTTA_CFG_BLE_INSTANCES_4_INITIALIZER
-/* ... add more of the above if ever needed */
-
-#define INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS(N) EXPAND(CONCATENATE(INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS_, N))
-#elif !defined(INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS)
+#if !defined(INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS)
 /*
  * The following applies when building without yotta. By default BLE_API provides
  * a trivial initializer list containing a single constructor: createBLEInstance.
  * This may be overridden.
  */
 #define INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS createBLEInstance
-
-// yotta unlike mbed-cli has proper dependency mechanisms
-// It is not required to defined a stub for createBLEInstance
-#if !defined(YOTTA_CFG_MBED_OS)
-
-// this stub is required by ARMCC otherwise link will systematically fail
-WEAK BLEInstanceBase* createBLEInstance() {
-    codal_error("Please provide an implementation for mbed BLE");
-    return NULL;
-}
-
 #endif
-
-
-#endif /* YOTTA_CFG_BLE_INSTANCES_COUNT */
 
 typedef BLEInstanceBase *(*InstanceConstructor_t)(void);
 static const InstanceConstructor_t instanceConstructors[BLE::NUM_INSTANCES] = {
-#ifndef YOTTA_CFG_BLE_INSTANCES_COUNT
     INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS
-#else
-    INITIALIZER_LIST_FOR_INSTANCE_CONSTRUCTORS(YOTTA_CFG_BLE_INSTANCES_COUNT)
-#endif
 };
 
 BLE &

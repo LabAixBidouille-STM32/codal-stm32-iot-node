@@ -54,12 +54,12 @@ class BlueNRGDevice : public BLEInstanceBase
 {
 
 public:
-    BlueNRGDevice(codal::PinNumber mosi, 
-            codal::PinNumber miso, 
-            codal::PinNumber sck, 
-            codal::PinNumber cs, 
-            codal::PinNumber rst, 
-            codal::PinNumber irq);
+    BlueNRGDevice(codal::STM32L4xxPin& mosi,
+                  codal::STM32L4xxPin& miso,
+                  codal::STM32L4xxPin& sck,
+                  codal::STM32L4xxPin& cs,
+                  codal::STM32L4xxPin& rst,
+                  codal::STM32L4xxPin& irq);
             
     virtual ~BlueNRGDevice(void);
 
