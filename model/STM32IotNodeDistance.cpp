@@ -1,34 +1,10 @@
-/*
-The MIT License (MIT)
-
-Copyright (c) 2016 Lancaster University, UK.
-
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-*/
-
 /**
   * Class definition for temperature.
   * Represents the temperature on the STM IOT node.
   */
 
 #include "CodalConfig.h"
+#include "CodalDmesg.h"
 #include "STM32IotNode.h"
 #include "STM32IotNodeDistance.h"
 
@@ -45,8 +21,6 @@ STM32IotNodeDistance::STM32IotNodeDistance( STM32L4xxI2C& i2c )
 : Sensor(DEVICE_ID_DISTANCE)
 , _i2c( i2c )
 {
- memset( &VL53L0X_Dev, 0, sizeof ( VL53L0X_Dev ) );
- VL53L0X_Dev.I2cDevAddr = VL53L0X_ADDRESS_DEFAULT;
 }
 
 /**
@@ -59,16 +33,8 @@ STM32IotNodeDistance::STM32IotNodeDistance( STM32L4xxI2C& i2c )
  *
  */
 
-int STM32IotNodeDistance::configure( )
+int STM32IotNodeDistance::configure()
 {
-// if ( !samplePeriod )
-//  samplePeriod = 1;
-// float Value = 1000.0f / ( float ) samplePeriod;
-// if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Set_ODR_Value( &DrvContext, Value ) != COMPONENT_OK )
-//  return DEVICE_I2C_ERROR;
-// if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Get_ODR( &DrvContext, &Value ) != COMPONENT_OK )
-//  return DEVICE_I2C_ERROR;
-// samplePeriod = 1000.0f / ( float ) Value;
  return DEVICE_OK;
 }
 
@@ -79,7 +45,6 @@ int STM32IotNodeDistance::configure( )
   */
 int STM32IotNodeDistance::init()
 {
-    updateSample();
     return DEVICE_OK;
 }
 /**
@@ -92,24 +57,9 @@ int STM32IotNodeDistance::init()
  *
  */
 
-extern "C" void STM32IotNode_Trace( const char* Text );
-
 int STM32IotNodeDistance::readValue()
 {
- STM32IotNode_Trace( "STM32IotNodeDistance::readValue 0\n" );
- if ( !DrvContext.isInitialized )
- {
-  STM32IotNode_Trace( "STM32IotNodeDistance::readValue 1\n" );
-   ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Init( &DrvContext );
-  //while ( 1 );
-   STM32IotNodeDistance::configure();
-  ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Sensor_Enable( &DrvContext );
- }
-// STM32IotNode_Trace( "STM32IotNodeDistance::readValue 2\n" );
- float Data = 0.0;
-// if ( ( ( DISTANCE_Drv_t* ) DrvContext.pVTable )->Get_Distance( &DrvContext, &Data ) == COMPONENT_OK )
-  return ( int ) ( Data );
- return DEVICE_I2C_ERROR;
+    return 5;
 }
 
 }

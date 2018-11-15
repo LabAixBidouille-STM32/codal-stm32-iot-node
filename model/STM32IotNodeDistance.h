@@ -7,11 +7,7 @@
 #include "stm32l4xxPin.h"
 #include "stm32l4xxI2C.h"
 #include "stm32l475e_iot01.h"
-
-#include "../vl53l0x/VL53L0X_Driver_HL.h"
-#include "../vl53l0x/vl53l0x_def.h"
-#include "../vl53l0x/vl53l0x_api.h"
-#include "../vl53l0x/vl53l0x_tof.h"
+#include "vl53l0x_class.h"
 
 namespace codal
 {
@@ -20,37 +16,13 @@ namespace codal
    */
  class STM32IotNodeDistance : public Sensor
  {
-
-   VL53L0X_Dev_t VL53L0X_Dev;
-
-//   VL53L0X_Dev_t VL53L0X_Dev =
-//   {
-//    .Data       = { 0 },
-//    .I2cDevAddr = VL53L0X_ADDRESS_DEFAULT,
-//   };
-
-   DrvContextTypeDef DrvContext =
-   {
-    .who_am_i      = 0xEE,
-    .ifType        = 0,
-    .address       = VL53L0X_ADDRESS_DEFAULT,
-    .spiDevice     = 0,
-    .instance      = 0,
-    .isInitialized = 0,
-    .isEnabled     = 0,
-    .isCombo       = 0,
-    .pData         = ( void * ) &VL53L0X_Dev,
-    .pVTable       = ( void * ) &VL53L0X_Drv,
-    .pExtVTable    = 0,
-   };
-
-   STM32L4xxI2C& _i2c;
-
+     STM32L4xxI2C& _i2c;
+     
    public:
    /**
     * Constructor.
     */
-    STM32IotNodeDistance( STM32L4xxI2C& i2c );
+    STM32IotNodeDistance(STM32L4xxI2C& i2c);
 
    protected:
 
