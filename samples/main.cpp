@@ -37,6 +37,9 @@
 #elif defined(FLASH_MEMORY_SAMPLE)
     #include "FlashMemory.h"
     #define SAMPLE_MAIN FlashMemory_main
+#elif defined(SERIAL_SAMPLE)
+    #include "SerialSample.h"
+    #define SAMPLE_MAIN Serial_main
 #else
     #include "Blink.h"
     #define SAMPLE_MAIN Blink_main
