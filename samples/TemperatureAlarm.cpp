@@ -66,7 +66,7 @@ void TemperatureAlarm_main(STM32IotNode& _iotNode)
 {
     piotNode = &_iotNode;
     DMESG("TEMP ALARM");
-    new TemperatureService(piotNode->ble, piotNode->temperature);
+    //new TemperatureService(piotNode->ble, piotNode->temperature);
     // listen for client events which set the upper and lower temperature limits
     piotNode->messageBus.listen(set_lower, any, onSetLower);
     piotNode->messageBus.listen(set_upper, any, onSetUpper);

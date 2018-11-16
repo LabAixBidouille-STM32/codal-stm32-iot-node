@@ -16,18 +16,20 @@ namespace codal
   /**
    * Represents the gyroscope on the STM32 IOT node.
    */
- class STM32IotNodeTemperature : public Sensor
+ class STM32IotNodeTemperature
  {
    STM32L4xxI2C& _i2c;
    TSENSOR_DrvTypeDef *tsensor_drv; 
    bool isInitialized;
-
+   uint16_t samplePeriod;       // The time between samples, in milliseconds.
    public:
 
    /**
     * Constructor.
     */
     STM32IotNodeTemperature(STM32L4xxI2C& i2c);
+
+    int getValue();
 
    protected:
 
