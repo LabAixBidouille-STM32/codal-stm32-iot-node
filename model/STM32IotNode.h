@@ -12,6 +12,7 @@
 #include "stm32l4xxTimer.h"
 #include "stm32l4xxSPI.h"
 #include "stm32l4xxI2C.h"
+#include "stm32l4xxSimpleSerial.h"
 #include "STM32IotNodeTemperature.h"
 
 // Status flag values
@@ -32,6 +33,8 @@ namespace codal
             MessageBus     messageBus;
 
             STM32IotNodeIO io;
+
+            STM32L4xxSimpleSerial serial;
 
             STM32L4xxSPI spi1;//External on arduino stardard pins
             STM32L4xxSPI spi3;//Internal used by BLE, SubGHz and wifi

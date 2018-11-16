@@ -6,6 +6,7 @@ void STM32IotNode_dmesg_flush();
 
 static STM32IotNode *device_instance = NULL;
 
+
 /**
   * Constructor.
   *
@@ -16,7 +17,8 @@ STM32IotNode::STM32IotNode()
   : CodalComponent(), 
     timer(), 
     messageBus(), 
-    io(), 
+    io(),
+    serial(io.tx, io.rx),
     spi1(io.miso, io.mosi, io.sclk), 
     spi3(io.miso3, io.mosi3, io.sclk3),
     i2c1(io.sda, io.scl),
@@ -27,6 +29,7 @@ STM32IotNode::STM32IotNode()
     // Clear our status
     status = 0;
     device_instance = this;
+    codal::default_serial_debug = &this->serial;
 }
 
 /**
@@ -60,6 +63,8 @@ int STM32IotNode::init()
         if(CodalComponent::components[i])
             CodalComponent::components[i]->init();
     }
+
+    serial.init();
 
     codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
     status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;
