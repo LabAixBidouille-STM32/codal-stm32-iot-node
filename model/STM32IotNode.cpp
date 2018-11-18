@@ -4,7 +4,7 @@
 using namespace codal;
 void STM32IotNode_dmesg_flush();
 
-static STM32IotNode *device_instance = NULL;
+STM32IotNode *codal::default_device_instance = nullptr;
 
 
 /**
@@ -14,7 +14,7 @@ static STM32IotNode *device_instance = NULL;
   * that represent various device drivers used to control aspects of the STM32 IOT node.
   */
 STM32IotNode::STM32IotNode()
-  : CodalComponent(), 
+  : CodalComponent(),
     timer(), 
     messageBus(), 
     io(),
@@ -23,12 +23,12 @@ STM32IotNode::STM32IotNode()
     spi3(io.miso3, io.mosi3, io.sclk3),
     i2c1(io.sda, io.scl),
     i2c2(io.sda2, io.scl2),
-    temperature(i2c2)
+    temperature()
     //ble(BLE::Instance())
 {
     // Clear our status
     status = 0;
-    device_instance = this;
+    default_device_instance = this;
     codal::default_serial_debug = &this->serial;
     codal::default_i2c_sensors_bus = &this->i2c2;
 }
@@ -56,17 +56,22 @@ int STM32IotNode::init()
     status |= DEVICE_INITIALIZED;
 
     timer.init();
+    serial.init();
+    i2c2.init();
+
     // Bring up fiber scheduler.
     scheduler_init(messageBus);
 
     for(int i = 0; i < DEVICE_COMPONENT_COUNT; i++)
     {
-        if(CodalComponent::components[i])
+        
+        if(CodalComponent::components[i]){
+            printf("Init component %d : %d\n",i, CodalComponent::components[i]->id);
             CodalComponent::components[i]->init();
+        }
     }
 
-    serial.init();
-    i2c2.init();
+
 
     codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
     status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;
@@ -91,14 +96,24 @@ void STM32IotNode_dmesg_flush()
 #if CONFIG_ENABLED(DMESG_SERIAL_DEBUG)
 /*
 #if DEVICE_DMESG_BUFFER_SIZE > 0
-    if (codalLogStore.ptr > 0 && device_instance)
+    if (codalLogStore.ptr > 0 && default_device_instance)
     {
         for (uint32_t i=0; i<codalLogStore.ptr; i++)
-            ((STM32IotNode *)device_instance)->serial.putc(codalLogStore.buffer[i]);
+            ((STM32IotNode *)default_device_instance)->serial.putc(codalLogStore.buffer[i]);
 
         codalLogStore.ptr = 0;
     }
 #endif
 */
 #endif
+}
+
+int target_seed_random(uint32_t rand)
+{
+    return codal::seed_random(rand);
+}
+
+int target_random(int max)
+{
+    return codal::random(max);
 }

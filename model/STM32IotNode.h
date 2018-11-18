@@ -2,6 +2,7 @@
 #define STM32_IOT_NODE_H
 
 #include "CodalComponent.h"
+#include "CodalDevice.h"
 #include "CodalFiber.h"
 
 #include "NotifyEvents.h"
@@ -26,7 +27,7 @@
  */
 namespace codal
 {
-    class STM32IotNode : public CodalComponent
+    class STM32IotNode : public CodalDevice, public CodalComponent
     {
         public:
             STM32L4xxTimer timer;
@@ -99,5 +100,7 @@ namespace codal
                 return system_timer_current_time();
             }
     };
+
+    extern STM32IotNode *default_device_instance;
 }
 #endif
