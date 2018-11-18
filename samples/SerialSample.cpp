@@ -3,11 +3,6 @@
 
 // Sensors drivers present in the BSP library
 #include "stm32l475e_iot01_tsensor.h"
-#include "stm32l475e_iot01_hsensor.h"
-#include "stm32l475e_iot01_psensor.h"
-#include "stm32l475e_iot01_magneto.h"
-#include "stm32l475e_iot01_gyro.h"
-#include "stm32l475e_iot01_accelero.h"
 
 void Serial_main(codal::STM32IotNode& iotNode){
     printf("\n");
