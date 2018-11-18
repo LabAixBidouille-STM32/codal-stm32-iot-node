@@ -30,6 +30,7 @@ STM32IotNode::STM32IotNode()
     status = 0;
     device_instance = this;
     codal::default_serial_debug = &this->serial;
+    codal::default_i2c_sensors_bus = &this->i2c2;
 }
 
 /**
@@ -65,6 +66,7 @@ int STM32IotNode::init()
     }
 
     serial.init();
+    i2c2.init();
 
     codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
     status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;
