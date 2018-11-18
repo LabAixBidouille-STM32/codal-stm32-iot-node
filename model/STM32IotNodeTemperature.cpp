@@ -6,31 +6,20 @@
 #include "CodalConfig.h"
 #include "STM32IotNode.h"
 #include "STM32IotNodeTemperature.h"
+
 namespace codal
 {
-
-/*
- * Event Handler for periodic sample timer
- */
-  void onSampleEvent(Event){
-
-  }
   /**
     * Constructor.
     *
     * Create a representation of the temperature on the STM32 IOT node
     *
     */
-  STM32IotNodeTemperature::STM32IotNodeTemperature( STM32L4xxI2C& i2c )
-  :  
-    _i2c(i2c),
-    tsensor_drv(&HTS221_T_Drv),
-    isInitialized(false)
+  STM32IotNodeTemperature::STM32IotNodeTemperature()
+    : Sensor(DEVICE_ID_THERMOMETER),
+      tsensor_drv(&HTS221_T_Drv),
+      isInitialized(false)
   {
-        // Configure for a 2 Hz update frequency by default.
-    if(EventModel::defaultEventBus)
-        EventModel::defaultEventBus->listen(DEVICE_ID_THERMOMETER, SENSOR_UPDATE_NEEDED, onSampleEvent, MESSAGE_BUS_LISTENER_IMMEDIATE);
-    readValue();
     //configure();
     //updateSample();
   }
@@ -121,7 +110,6 @@ namespace codal
   {
     if(!isInitialized)
       configure();
-    return (int) tsensor_drv->ReadTemp(TSENSOR_I2C_ADDRESS) * 10;
+    return (int) (tsensor_drv->ReadTemp(TSENSOR_I2C_ADDRESS) * 10.f);
   }
-
 }
