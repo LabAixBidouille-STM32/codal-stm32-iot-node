@@ -4,9 +4,12 @@
 #if defined(BLE_TEMPERATURE_ALARM_SAMPLE)
     #include "TemperatureAlarm.h"
     #define SAMPLE_MAIN TemperatureAlarm_main
-#elif defined(HTS221_SAMPLE)
-    #include "HTS221.h"
-    #define SAMPLE_MAIN HTS221_main
+#elif defined(HTS221_TEMPERATURE_SAMPLE)
+    #include "HTS221_TEMPERATURE.h"
+    #define SAMPLE_MAIN HTS221_TEMPERATURE_main
+#elif defined(HTS221_HUMIDITY_SAMPLE)
+    #include "HTS221_HUMIDITY.h"
+    #define SAMPLE_MAIN HTS221_HUMIDITY_main
 #elif defined(LIS3MDL_SAMPLE)
     #include "LIS3MDL.h"
     #define SAMPLE_MAIN LIS3MDL_main

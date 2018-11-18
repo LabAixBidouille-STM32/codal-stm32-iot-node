@@ -1,6 +1,6 @@
 #include "CodalConfig.h"
 
-#include "HTS221.h"
+#include "HTS221_TEMPERATURE.h"
 #include "stm32l4xxI2C.h"
 
 using namespace codal;
@@ -12,7 +12,7 @@ void onSampleEvent(Event e){
         printf("\nTEMPERATURE = %d.%d degC\n", isensor_value, dsensor_value);
 }
 
-void HTS221_main(codal::STM32IotNode& iotNode){
+void HTS221_TEMPERATURE_main(codal::STM32IotNode& iotNode){
     printf("\n");
     printf("*******************************************\n");
     printf("* Demonstration du capteur de temperature *\n");
