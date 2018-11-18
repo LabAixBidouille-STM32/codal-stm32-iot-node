@@ -15,6 +15,7 @@
 #include "stm32l4xxI2C.h"
 #include "stm32l4xxSimpleSerial.h"
 #include "STM32IotNodeTemperature.h"
+#include "STM32IotNodeHumidity.h"
 
 // Status flag values
 #define DEVICE_INITIALIZED                    0x01
@@ -44,6 +45,7 @@ namespace codal
             STM32L4xxI2C i2c2;//Internal only used by MEMS sensors 
 
             STM32IotNodeTemperature temperature;
+            STM32IotNodeHumidity humidity;
 
             
             //BLE& ble;

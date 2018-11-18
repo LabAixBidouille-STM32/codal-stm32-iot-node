@@ -18,7 +18,6 @@ namespace codal
    */
   class STM32IotNodeHumidity : public Sensor
   {
-    STM32L4xxI2C& _i2c;
     HSENSOR_DrvTypeDef *hsensor_drv; 
     bool isInitialized;
 
@@ -27,7 +26,7 @@ namespace codal
     /**
      * Constructor.
      */
-    STM32IotNodeHumidity( STM32L4xxI2C& i2c );
+    STM32IotNodeHumidity();
 
     protected:
 
