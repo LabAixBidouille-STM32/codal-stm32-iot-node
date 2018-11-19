@@ -301,10 +301,10 @@ class VL53L0X : public RangeSensor
      */
     VL53L0X(codal::STM32L4xxI2C *i2c, codal::PinNumber pin, codal::PinNumber pin_gpio1, uint8_t DevAddr=VL53L0x_DEFAULT_DEVICE_ADDRESS) : RangeSensor(), dev_i2c(i2c), gpio0(pin), gpio1Int(pin_gpio1)
     {
-       MyDevice.I2cDevAddr=DevAddr;
-       MyDevice.comms_type=1; // VL53L0X_COMMS_I2C
-       MyDevice.comms_speed_khz=400;
-       Device=&MyDevice;
+		memset(&MyDevice, 0, sizeof(MyDevice));
+       MyDevice.I2cDevAddr = DevAddr;
+       MyDevice.comms_type = 1; // VL53L0X_COMMS_I2C
+       Device = &MyDevice;
 	   if(gpio0 != codal::PinNumber::NC)
 			digital_io_init(gpio0, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL);
     }
@@ -337,9 +337,7 @@ class VL53L0X : public RangeSensor
     virtual void VL53L0X_Off(void)
     {
        if(gpio0 != codal::PinNumber::NC)
-       {
          digitalWrite(gpio0, 0);
-       }
        target_wait(10);
     }
 
@@ -486,6 +484,8 @@ class VL53L0X : public RangeSensor
         else {
             *piData = 0;
             status = VL53L0X_ERROR_RANGE_ERROR;
+			printf("pRangingMeasurementData.RangeStatus = %x\n", pRangingMeasurementData.RangeStatus);
+			printf("*piData = %ld\n", *piData);
         }
         StopMeasurementSimplified(range_single_shot_polling);
         return status;

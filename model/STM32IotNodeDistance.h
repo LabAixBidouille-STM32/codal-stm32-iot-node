@@ -16,15 +16,14 @@ namespace codal
    */
  class STM32IotNodeDistance : public Sensor
  {
-     STM32L4xxI2C& _i2c;
-     
+    VL53L0X sensor_vl53l0x; 
    public:
    /**
     * Constructor.
     */
-    STM32IotNodeDistance(STM32L4xxI2C& i2c);
+    STM32IotNodeDistance();
 
-   protected:
+   public:
 
     /**
      * Configures the temperature for celsuiu range and sample rate defined
@@ -49,7 +48,6 @@ namespace codal
      * Read the value from underlying hardware.
      */
     virtual int readValue();
-
 
     };
 }

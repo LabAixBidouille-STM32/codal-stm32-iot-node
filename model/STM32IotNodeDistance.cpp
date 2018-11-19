@@ -8,8 +8,7 @@
 #include "STM32IotNode.h"
 #include "STM32IotNodeDistance.h"
 
-namespace codal
-{
+using namespace codal;
 
 /**
   * Constructor.
@@ -17,10 +16,11 @@ namespace codal
   * Create a representation of the temperature on the STM32 IOT node
   *
   */
-STM32IotNodeDistance::STM32IotNodeDistance( STM32L4xxI2C& i2c )
-: Sensor(DEVICE_ID_DISTANCE)
-, _i2c( i2c )
+STM32IotNodeDistance::STM32IotNodeDistance()
+: Sensor(DEVICE_ID_DISTANCE),
+  sensor_vl53l0x(default_i2c_sensors_bus, PinNumber::PC_6, PinNumber::PC_7)
 {
+  configure();
 }
 
 /**
@@ -35,7 +35,17 @@ STM32IotNodeDistance::STM32IotNodeDistance( STM32L4xxI2C& i2c )
 
 int STM32IotNodeDistance::configure()
 {
- return DEVICE_OK;
+   // Switch off VL53L0X component.
+  sensor_vl53l0x.VL53L0X_Off();
+
+  // Initialize VL53L0X top component.
+  status = sensor_vl53l0x.InitSensor(0x10);
+  if(status)
+  {
+    printf("Init sensor_vl53l0x failed...");
+    return DEVICE_I2C_ERROR;
+  }
+  return DEVICE_OK;
 }
 
 
@@ -59,7 +69,16 @@ int STM32IotNodeDistance::init()
 
 int STM32IotNodeDistance::readValue()
 {
-    return 5;
-}
+  // Read Range.
+  uint32_t distance;
+  int status = sensor_vl53l0x.GetDistance(&distance);
 
+  printf("| Distance [mm]: %ld |  \n", distance);
+  
+  if (status != VL53L0X_ERROR_NONE){
+    printf("VL53L0X_ERROR : %d\n", status );
+    return DEVICE_I2C_ERROR;
+  }
+  
+  return distance;
 }

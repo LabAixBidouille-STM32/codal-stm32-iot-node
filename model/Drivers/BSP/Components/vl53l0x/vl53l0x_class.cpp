@@ -5020,15 +5020,14 @@ VL53L0X_Error VL53L0X::VL53L0X_UpdateByte(VL53L0X_DEV Dev, uint8_t index, uint8_
 
 VL53L0X_Error VL53L0X::VL53L0X_I2CWrite(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t* pBuffer, uint16_t NumByteToWrite)
 {
-   dev_i2c->write(((uint8_t)(((DeviceAddr) >> 1) & 0x7F)) ,&RegisterAddr, 1);
-   for (int i = 0 ; i < NumByteToWrite ; i++)
-     dev_i2c->write(((uint8_t)(((DeviceAddr) >> 1) & 0x7F)),&(pBuffer[i]),1);
+
+   I2Cx_WriteMultiple(dev_i2c->getHandle(), ((uint8_t)(((DeviceAddr) >> 1) & 0x7F)), RegisterAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, NumByteToWrite);
    return 0;
 }
 
 VL53L0X_Error VL53L0X::VL53L0X_I2CRead(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t* pBuffer, uint16_t NumByteToRead)
 {
-   dev_i2c->readRegister(((uint8_t)(((DeviceAddr) >> 1) & 0x7F)), RegisterAddr, pBuffer, NumByteToRead, false);
+	I2Cx_ReadMultiple(dev_i2c->getHandle(), ((uint8_t)(((DeviceAddr) >> 1) & 0x7F)), RegisterAddr, I2C_MEMADD_SIZE_8BIT , pBuffer, NumByteToRead);
    return 0;
 }
 
