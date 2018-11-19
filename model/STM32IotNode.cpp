@@ -58,6 +58,8 @@ int STM32IotNode::init()
     serial.init();
     i2c2.init();
 
+    distance.init();
+    
     // Bring up fiber scheduler.
     scheduler_init(messageBus);
 

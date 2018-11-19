@@ -302,15 +302,21 @@ class VL53L0X : public RangeSensor
      * @param[in] &pin_gpio1 pin Mbed InterruptIn PinName to be used as component GPIO_1 INT
      * @param[in] DevAddr device address, 0x29 by default
      */
-    VL53L0X(codal::STM32L4xxI2C *i2c, codal::STM32L4xxPin& pin, codal::STM32L4xxPin& pin_gpio1, uint8_t DevAddr=VL53L0x_DEFAULT_DEVICE_ADDRESS) : RangeSensor(), dev_i2c(i2c), gpio0(pin), gpio1Int(pin_gpio1)
+    VL53L0X(codal::STM32L4xxI2C *i2c, codal::STM32L4xxPin* pin, codal::STM32L4xxPin* pin_gpio1, uint8_t DevAddr=VL53L0x_DEFAULT_DEVICE_ADDRESS) 
+	: RangeSensor(), 
+	dev_i2c(i2c), 
+	gpio0(pin), 
+	gpio1Int(pin_gpio1)
     {
 	   memset(&MyDevice, 0, sizeof(MyDevice));
        MyDevice.I2cDevAddr = DevAddr;
        MyDevice.comms_type = 1; // VL53L0X_COMMS_I2C
        Device = &MyDevice;
-	   gpio0.setDigitalValue(0);//Sensor Off
+	   if(gpio0 != nullptr)
+	   		gpio0->setDigitalValue(0);//Sensor Off
     }
     
+
    /** Destructor
     */
     virtual ~VL53L0X(){}
@@ -326,7 +332,8 @@ class VL53L0X : public RangeSensor
     /* turns on the sensor */
     virtual void VL53L0X_On(void)
     {
-       gpio0.setDigitalValue(1);
+		   if(gpio0 != nullptr)
+		       gpio0->setDigitalValue(1);
        target_wait(100);
     }
 
@@ -337,7 +344,8 @@ class VL53L0X : public RangeSensor
     /* turns off the sensor */
     virtual void VL53L0X_Off(void)
     {
-       gpio0.setDigitalValue(0);
+		if(gpio0 != nullptr)
+    		gpio0->setDigitalValue(0);
        target_wait(100);
     }
 
@@ -484,8 +492,6 @@ class VL53L0X : public RangeSensor
         else {
             *piData = 0;
             status = VL53L0X_ERROR_RANGE_ERROR;
-			printf("pRangingMeasurementData.RangeStatus = %x\n", pRangingMeasurementData.RangeStatus);
-			printf("*piData = %ld\n", *piData);
         }
         StopMeasurementSimplified(range_single_shot_polling);
         return status;
@@ -787,9 +793,11 @@ class VL53L0X : public RangeSensor
        int status;
 
        status=ReadID();
-       if(status)
+       
+	   if(status)
           VL53L0X_ErrLog("Failed to read ID device. Device not present!\n\r");
-       return status;
+       
+	   return status;
     }
     int StopRangeMeasurement(OperatingMode operating_mode);
     int GetRangeMeas(OperatingMode operating_mode, VL53L0X_RangingMeasurementData_t *Data);
@@ -799,6 +807,15 @@ class VL53L0X : public RangeSensor
     int RangeMeasPollSingleShot();
     int RangeMeasPollContinuousMode();
     int RangeMeasIntContinuousMode(void (*fptr)(void));
+public:
+	void setGpio0(codal::STM32L4xxPin* gpio0){
+		this->gpio0 = gpio0;
+	}
+
+	void setGpio1Int(codal::STM32L4xxPin* gpio1Int){
+		this->gpio1Int = gpio1Int;
+	}
+
 
  protected:
     VL53L0X_DeviceInfo_t DeviceInfo;
@@ -806,8 +823,8 @@ class VL53L0X : public RangeSensor
     /* IO Device */
     codal::STM32L4xxI2C *dev_i2c;
     /* Digital out pin */
-	codal::STM32L4xxPin& gpio0;
-	codal::STM32L4xxPin& gpio1Int;
+	codal::STM32L4xxPin* gpio0;
+	codal::STM32L4xxPin* gpio1Int;
     /* Device data */
 	VL53L0X_Dev_t MyDevice;
     VL53L0X_DEV Device;

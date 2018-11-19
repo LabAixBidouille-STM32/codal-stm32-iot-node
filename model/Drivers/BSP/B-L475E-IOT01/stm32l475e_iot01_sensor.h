@@ -15,6 +15,7 @@ uint16_t SENSOR_IO_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint
 void     SENSOR_IO_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
 HAL_StatusTypeDef SENSOR_IO_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
 void     SENSOR_IO_Delay(uint32_t Delay);
+uint32_t SENSOR_IO_Error();
 
 #ifdef __cplusplus
 }

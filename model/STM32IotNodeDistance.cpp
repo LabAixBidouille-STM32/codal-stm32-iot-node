@@ -18,9 +18,10 @@ using namespace codal;
   */
 STM32IotNodeDistance::STM32IotNodeDistance()
 : Sensor(DEVICE_ID_DISTANCE),
-  sensor_vl53l0x(default_i2c_sensors_bus, default_device_instance->io.pc6, default_device_instance->io.pc7)
+  sensor_vl53l0x(default_i2c_sensors_bus, nullptr, nullptr),
+  needInit(true)
 {
-  configure();
+
 }
 
 /**
@@ -45,6 +46,8 @@ int STM32IotNodeDistance::configure()
     printf("Init sensor_vl53l0x failed...");
     return DEVICE_I2C_ERROR;
   }
+  printf("Init sensor_vl53l0x ok...");
+
   return DEVICE_OK;
 }
 
@@ -55,7 +58,14 @@ int STM32IotNodeDistance::configure()
   */
 int STM32IotNodeDistance::init()
 {
-    return DEVICE_OK;
+    if(!needInit)
+      return DEVICE_OK;
+
+    sensor_vl53l0x.setGpio0(&default_device_instance->io.pc6);
+    sensor_vl53l0x.setGpio1Int(&default_device_instance->io.pc7);
+    
+    needInit = false;
+    return configure();
 }
 /**
  * Poll to see if new data is available from the hardware. If so, update it.
@@ -69,6 +79,7 @@ int STM32IotNodeDistance::init()
 
 int STM32IotNodeDistance::readValue()
 {
+  init();
   // Read Range.
   uint32_t distance;
   int status = sensor_vl53l0x.GetDistance(&distance);

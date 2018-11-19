@@ -17,6 +17,7 @@ namespace codal
  class STM32IotNodeDistance : public Sensor
  {
     VL53L0X sensor_vl53l0x; 
+    bool needInit;
    public:
    /**
     * Constructor.

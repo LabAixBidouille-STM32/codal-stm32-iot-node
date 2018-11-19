@@ -46,12 +46,10 @@ namespace codal
             STM32L4xxI2C i2c1;//External on arduino stardard pins 
             STM32L4xxI2C i2c2;//Internal only used by MEMS sensors 
 
-            //STM32IotNodeDistance distance;
+            STM32IotNodeDistance distance;
             STM32IotNodeTemperature temperature;
             STM32IotNodeHumidity humidity;
             STM32IotNodePressure pressure;
-            
-
             
             //BLE& ble;
             
