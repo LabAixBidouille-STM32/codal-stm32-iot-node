@@ -18,7 +18,6 @@ namespace codal
    */
  class STM32IotNodePressure : public Sensor
  {
-    STM32L4xxI2C& _i2c;
     PSENSOR_DrvTypeDef *psensor_drv; 
     bool isInitialized;
 
@@ -26,7 +25,7 @@ namespace codal
    /**
     * Constructor.
     */
-    STM32IotNodePressure( STM32L4xxI2C& i2c );
+    STM32IotNodePressure();
 
    protected:
 

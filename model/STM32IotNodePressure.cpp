@@ -15,14 +15,12 @@ namespace codal
    * Create a representation of the pressure on the STM32 IOT node
    *
    */
-  STM32IotNodePressure::STM32IotNodePressure( STM32L4xxI2C& i2c )
-  :  Sensor(DEVICE_ID_HUMIDITY), 
-    _i2c( i2c ),
+  STM32IotNodePressure::STM32IotNodePressure()
+  :  Sensor(DEVICE_ID_PRESSURE), 
     psensor_drv(&LPS22HB_P_Drv),
     isInitialized(false)
   {
     configure();
-    updateSample( );
   }
 
   /**
@@ -30,7 +28,7 @@ namespace codal
    *
    *
    */
-  void updateODR(uint8_t odr){
+  static void updateODR(uint8_t odr){
     uint8_t tmp;
     /* Read CTRL_REG1 */
     tmp = SENSOR_IO_Read(LPS22HB_I2C_ADDRESS, LPS22HB_CTRL_REG1);
@@ -43,7 +41,7 @@ namespace codal
     SENSOR_IO_Write(LPS22HB_I2C_ADDRESS, LPS22HB_CTRL_REG1, tmp);
   }
 
-  uint8_t getBestAdaptedODRValue(float& frequency){
+  static uint8_t getBestAdaptedODRValue(float& frequency){
     uint8_t odr = 0; 
 
     if(frequency <= 5.f){
