@@ -9,7 +9,7 @@ using namespace codal;
   *
   *
   */
-  void updateODR(uint8_t odr){
+  void codal::updateODR(uint8_t odr){
     uint8_t tmp;
     /* Read CTRL_REG1 */
     tmp = SENSOR_IO_Read(HTS221_I2C_ADDRESS, HTS221_CTRL_REG1);
@@ -22,7 +22,7 @@ using namespace codal;
     SENSOR_IO_Write(HTS221_I2C_ADDRESS, HTS221_CTRL_REG1, tmp);
   }
 
-  uint8_t getBestAdaptedODRValue(float& frequency){
+  uint8_t codal::getBestAdaptedODRValue(float& frequency){
   uint8_t odr = 0; 
 
     if(frequency <= 5.f){
@@ -42,5 +42,4 @@ using namespace codal;
       frequency = 0;
     }
     return odr;
-
   }
