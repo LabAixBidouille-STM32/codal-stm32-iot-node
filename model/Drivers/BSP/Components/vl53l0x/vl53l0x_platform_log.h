@@ -100,7 +100,7 @@ void trace_print_module_function(uint32_t module, uint32_t level, uint32_t funct
 #define VL53L0X_ErrLog( fmt, ...)  fprintf(stderr, "VL53L0X_ErrLog %s" fmt "\n", __func__, ##__VA_ARGS__)
 
 #else /* VL53L0X_LOG_ENABLE no logging */
-    #define VL53L0X_ErrLog(...) (void)0
+    #define VL53L0X_ErrLog(str, ...) printf(str, ##__VA_ARGS__)
     #define _LOG_FUNCTION_START(module, fmt, ... ) (void)0
     #define _LOG_FUNCTION_END(module, status, ... ) (void)0
     #define _LOG_FUNCTION_END_FMT(module, status, fmt, ... ) (void)0
