@@ -16,6 +16,8 @@
 #include "stm32l4xxSimpleSerial.h"
 #include "STM32IotNodeTemperature.h"
 #include "STM32IotNodeHumidity.h"
+#include "STM32IotNodePressure.h"
+#include "STM32IotNodeDistance.h"
 
 // Status flag values
 #define DEVICE_INITIALIZED                    0x01
@@ -44,8 +46,11 @@ namespace codal
             STM32L4xxI2C i2c1;//External on arduino stardard pins 
             STM32L4xxI2C i2c2;//Internal only used by MEMS sensors 
 
+            //STM32IotNodeDistance distance;
             STM32IotNodeTemperature temperature;
             STM32IotNodeHumidity humidity;
+            STM32IotNodePressure pressure;
+            
 
             
             //BLE& ble;

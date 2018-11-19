@@ -54,7 +54,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
 #include "stm32.h"
-
+#include "stm32l475e_iot01_sensor.h"
 
 /**
   * @}

@@ -22,8 +22,7 @@ STM32IotNode::STM32IotNode()
     spi1(io.miso, io.mosi, io.sclk), 
     spi3(io.miso3, io.mosi3, io.sclk3),
     i2c1(io.sda, io.scl),
-    i2c2(io.sda2, io.scl2),
-    temperature()
+    i2c2(io.sda2, io.scl2)
     //ble(BLE::Instance())
 {
     // Clear our status
@@ -64,14 +63,10 @@ int STM32IotNode::init()
 
     for(int i = 0; i < DEVICE_COMPONENT_COUNT; i++)
     {
-        
         if(CodalComponent::components[i]){
-            printf("Init component %d : %d\n",i, CodalComponent::components[i]->id);
             CodalComponent::components[i]->init();
         }
     }
-
-
 
     codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
     status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;

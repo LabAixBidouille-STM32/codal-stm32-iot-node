@@ -18,7 +18,7 @@ using namespace codal;
   */
 STM32IotNodeDistance::STM32IotNodeDistance()
 : Sensor(DEVICE_ID_DISTANCE),
-  sensor_vl53l0x(default_i2c_sensors_bus, PinNumber::PC_6, PinNumber::PC_7)
+  sensor_vl53l0x(default_i2c_sensors_bus, default_device_instance->io.pc6, default_device_instance->io.pc7)
 {
   configure();
 }

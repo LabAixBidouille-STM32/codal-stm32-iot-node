@@ -113,6 +113,10 @@ namespace codal
 
             STM32L4xxPin        tx;
             STM32L4xxPin        rx;
+
+            STM32L4xxPin         pc6;
+            STM32L4xxPin         pc7;
+
     };
 }
 
