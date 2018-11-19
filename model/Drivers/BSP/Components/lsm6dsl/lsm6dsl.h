@@ -44,6 +44,9 @@ extern "C" {
 #endif
   
 /* Includes ------------------------------------------------------------------*/
+#include "stm32.h"
+#include "stm32l475e_iot01_sensor.h"
+
 #include "../Common/accelero.h"
 #include "../Common/gyro.h"  
 
@@ -212,10 +215,10 @@ extern "C" {
 #define LSM6DSL_ACC_GYRO_MAG_OFFZ_H                   0x32
 
 /* Accelero Full_ScaleSelection */
-#define LSM6DSL_ACC_FULLSCALE_2G          ((uint8_t)0x00) /*!< ±2 g */
-#define LSM6DSL_ACC_FULLSCALE_4G          ((uint8_t)0x08) /*!< ±4 g */
-#define LSM6DSL_ACC_FULLSCALE_8G          ((uint8_t)0x0C) /*!< ±8 g */
-#define LSM6DSL_ACC_FULLSCALE_16G         ((uint8_t)0x04) /*!< ±16 g */
+#define LSM6DSL_ACC_FULLSCALE_2G          ((uint8_t)0x00) /*!< ï¿½2 g */
+#define LSM6DSL_ACC_FULLSCALE_4G          ((uint8_t)0x08) /*!< ï¿½4 g */
+#define LSM6DSL_ACC_FULLSCALE_8G          ((uint8_t)0x0C) /*!< ï¿½8 g */
+#define LSM6DSL_ACC_FULLSCALE_16G         ((uint8_t)0x04) /*!< ï¿½16 g */
 
 /* Accelero Full Scale Sensitivity */
 #define LSM6DSL_ACC_SENSITIVITY_2G     ((float)0.061f)  /*!< accelerometer sensitivity with 2 g full scale  [mgauss/LSB] */
@@ -315,12 +318,6 @@ extern GYRO_DrvTypeDef Lsm6dslGyroDrv;
 /** @defgroup LSM6DSL_Imported_Functions LSM6DSL Imported Functions
  * @{
  */
-/* IO functions */
-extern void     SENSOR_IO_Init(void);
-extern void     SENSOR_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
-extern uint8_t  SENSOR_IO_Read(uint8_t Addr, uint8_t Reg);
-extern uint16_t SENSOR_IO_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
-extern void     SENSOR_IO_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
 /**
   * @}
   */

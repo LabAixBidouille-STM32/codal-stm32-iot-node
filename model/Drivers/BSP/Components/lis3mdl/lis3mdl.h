@@ -44,8 +44,10 @@ extern "C" {
 #endif
   
 /* Includes ------------------------------------------------------------------*/
+#include "stm32.h"
+#include "stm32l475e_iot01_sensor.h"
 #include "../Common/magneto.h"
- 
+
 /** @addtogroup BSP
   * @{
   */
@@ -121,7 +123,7 @@ extern "C" {
 #define LIS3MDL_MAG_FS_4_GA                  ((uint8_t) 0x00)  
 #define LIS3MDL_MAG_FS_8_GA                  ((uint8_t) 0x20)
 #define LIS3MDL_MAG_FS_12_GA                 ((uint8_t) 0x40)  
-#define LIS3MDL_MAG_FS_16_GA                 ((uint8_t) 0x60)  /*!< Full scale = ±16 Gauss */
+#define LIS3MDL_MAG_FS_16_GA                 ((uint8_t) 0x60)  /*!< Full scale = ï¿½16 Gauss */
 
 /* Mag_Reboot */ 
 #define LIS3MDL_MAG_REBOOT_DEFAULT           ((uint8_t) 0x00)
@@ -187,17 +189,6 @@ void LIS3MDL_MagReadXYZ(int16_t* pData);
   * @}
   */
 
-
-/** @defgroup LIS3MDL_Imported_Functions LIS3MDL Imported Functions
- * @{
- */
-/* IO functions */
-extern void     SENSOR_IO_Init(void);
-extern void     SENSOR_IO_DeInit(void);
-extern void     SENSOR_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
-extern uint8_t  SENSOR_IO_Read(uint8_t Addr, uint8_t Reg);
-extern uint16_t SENSOR_IO_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
-extern void     SENSOR_IO_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
 /**
   * @}
   */

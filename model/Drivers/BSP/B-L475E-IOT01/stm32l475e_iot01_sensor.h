@@ -1,11 +1,21 @@
 #pragma once
 
+#include <stdint.h>
+#include "stm32.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Sensors IO functions */
-WEAK void     SENSOR_IO_Init(void);
-WEAK void     SENSOR_IO_DeInit(void);
-WEAK void     SENSOR_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
-WEAK uint8_t  SENSOR_IO_Read(uint8_t Addr, uint8_t Reg);
-WEAK uint16_t SENSOR_IO_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
-WEAK void     SENSOR_IO_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
-WEAK HAL_StatusTypeDef SENSOR_IO_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
-WEAK void     SENSOR_IO_Delay(uint32_t Delay);
+void     SENSOR_IO_Init(void);
+void     SENSOR_IO_DeInit(void);
+void     SENSOR_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
+uint8_t  SENSOR_IO_Read(uint8_t Addr, uint8_t Reg);
+uint16_t SENSOR_IO_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
+void     SENSOR_IO_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
+HAL_StatusTypeDef SENSOR_IO_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
+void     SENSOR_IO_Delay(uint32_t Delay);
+
+#ifdef __cplusplus
+}
+#endif

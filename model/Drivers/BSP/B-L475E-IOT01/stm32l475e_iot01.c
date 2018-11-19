@@ -125,16 +125,6 @@ HAL_StatusTypeDef I2Cx_WriteMultiple(I2C_HandleTypeDef *i2c_handler, uint8_t Add
 HAL_StatusTypeDef I2Cx_IsDeviceReady(I2C_HandleTypeDef *i2c_handler, uint16_t DevAddress, uint32_t Trials);
 void              I2Cx_Error(I2C_HandleTypeDef *i2c_handler, uint8_t Addr);
 
-/* Sensors IO functions */
-WEAK void     SENSOR_IO_Init(void);
-WEAK void     SENSOR_IO_DeInit(void);
-WEAK void     SENSOR_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
-WEAK uint8_t  SENSOR_IO_Read(uint8_t Addr, uint8_t Reg);
-WEAK uint16_t SENSOR_IO_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
-WEAK void     SENSOR_IO_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length);
-WEAK HAL_StatusTypeDef SENSOR_IO_IsDeviceReady(uint16_t DevAddress, uint32_t Trials);
-WEAK void     SENSOR_IO_Delay(uint32_t Delay);
-
 void     NFC_IO_Init(uint8_t GpoIrqEnable);
 void     NFC_IO_DeInit(void);
 uint16_t NFC_IO_ReadMultiple (uint8_t Addr, uint8_t *pBuffer, uint16_t Length );
@@ -378,115 +368,7 @@ void BSP_COM_DeInit(COM_TypeDef COM, UART_HandleTypeDef *huart)
   * @}
   */
 
-/*******************************************************************************
-                            LINK OPERATIONS
-*******************************************************************************/
-/******************************** LINK Sensors ********************************/
 
-/**
-  * @brief  Initializes Sensors low level.
-  * @retval None
-  */
-WEAK void SENSOR_IO_Init(void)
-{
-    I2C_HandleTypeDef* i2c_handler = &hI2cHandler; 
-    memset(i2c_handler, 0, sizeof(*i2c_handler));
-    i2c_handler->Init.Timing           = DISCOVERY_I2C_TIMING;
-    i2c_handler->Init.OwnAddress1      = 0;
-    i2c_handler->Init.AddressingMode   = I2C_ADDRESSINGMODE_7BIT;
-    i2c_handler->Init.DualAddressMode  = I2C_DUALADDRESS_DISABLE;
-    i2c_handler->Init.OwnAddress2      = 0;
-    i2c_handler->Init.GeneralCallMode  = I2C_GENERALCALL_DISABLE;
-    i2c_handler->Init.NoStretchMode    = I2C_NOSTRETCH_DISABLE;
-    i2c_handler->Instance = I2C2;
-    I2Cx_Init(i2c_handler);
-}
-
-/**
-  * @brief  DeInitializes Sensors low level.
-  * @retval None
-  */
-WEAK void SENSOR_IO_DeInit(void)
-{
-  I2Cx_DeInit(&hI2cHandler);
-}
-
-/**
-  * @brief  Writes a single data.
-  * @param  Addr: I2C address
-  * @param  Reg: Reg address
-  * @param  Value: Data to be written
-  * @retval None
-  */
-WEAK void SENSOR_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
-{
-  I2Cx_WriteMultiple(&hI2cHandler, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT,(uint8_t*)&Value, 1);
-}
-
-/**
-  * @brief  Reads a single data.
-  * @param  Addr: I2C address
-  * @param  Reg: Reg address
-  * @retval Data to be read
-  */
-WEAK uint8_t SENSOR_IO_Read(uint8_t Addr, uint8_t Reg)
-{
-  uint8_t read_value = 0;
-
-  I2Cx_ReadMultiple(&hI2cHandler, Addr, Reg, I2C_MEMADD_SIZE_8BIT, (uint8_t*)&read_value, 1);
-
-  return read_value;
-}
-
-/**
-  * @brief  Reads multiple data with I2C communication
-  *         channel from TouchScreen.
-  * @param  Addr: I2C address
-  * @param  Reg: Register address
-  * @param  Buffer: Pointer to data buffer
-  * @param  Length: Length of the data
-  * @retval HAL status
-  */
-WEAK uint16_t SENSOR_IO_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length)
-{
- return I2Cx_ReadMultiple(&hI2cHandler, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, Buffer, Length);
-}
-
-/**
-  * @brief  Writes multiple data with I2C communication
-  *         channel from MCU to TouchScreen.
-  * @param  Addr: I2C address
-  * @param  Reg: Register address
-  * @param  Buffer: Pointer to data buffer
-  * @param  Length: Length of the data
-  * @retval None
-  */
-WEAK void SENSOR_IO_WriteMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length)
-{
-  I2Cx_WriteMultiple(&hI2cHandler, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, Buffer, Length);
-}
-
-/**
-  * @brief  Checks if target device is ready for communication. 
-  * @note   This function is used with Memory devices
-  * @param  DevAddress: Target device address
-  * @param  Trials: Number of trials
-  * @retval HAL status
-  */
-WEAK HAL_StatusTypeDef SENSOR_IO_IsDeviceReady(uint16_t DevAddress, uint32_t Trials)
-{ 
-  return (I2Cx_IsDeviceReady(&hI2cHandler, DevAddress, Trials));
-}
-
-/**
-  * @brief  Delay function used in TouchScreen low level driver.
-  * @param  Delay: Delay in ms
-  * @retval None
-  */
-WEAK void SENSOR_IO_Delay(uint32_t Delay)
-{
-  HAL_Delay(Delay);
-}
 
 /******************************** LINK NFC ********************************/
 
