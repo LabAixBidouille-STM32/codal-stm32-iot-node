@@ -5020,15 +5020,13 @@ VL53L0X_Error VL53L0X::VL53L0X_UpdateByte(VL53L0X_DEV Dev, uint8_t index, uint8_
 
 VL53L0X_Error VL53L0X::VL53L0X_I2CWrite(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t* pBuffer, uint16_t NumByteToWrite)
 {
-
-   I2Cx_WriteMultiple(dev_i2c->getHandle(), ((uint8_t)(((DeviceAddr) >> 1) & 0x7F)), RegisterAddr, I2C_MEMADD_SIZE_8BIT, pBuffer, NumByteToWrite);
+   SENSOR_IO_WriteMultiple(DeviceAddr, RegisterAddr, pBuffer, NumByteToWrite);
    return 0;
 }
 
 VL53L0X_Error VL53L0X::VL53L0X_I2CRead(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t* pBuffer, uint16_t NumByteToRead)
 {
-	I2Cx_ReadMultiple(dev_i2c->getHandle(), ((uint8_t)(((DeviceAddr) >> 1) & 0x7F)), RegisterAddr, I2C_MEMADD_SIZE_8BIT , pBuffer, NumByteToRead);
-   return 0;
+   return SENSOR_IO_ReadMultiple(DeviceAddr, RegisterAddr, pBuffer, NumByteToRead);
 }
 
 
@@ -5038,8 +5036,12 @@ int VL53L0X::ReadID()
     uint16_t rl_id=0;
 
     status = VL53L0X_RdWord(Device, VL53L0X_REG_IDENTIFICATION_MODEL_ID, &rl_id);
-    if (rl_id == 0xEEAA)
+	
+	printf("VL53L0X_REG_IDENTIFICATION_MODEL_ID = %d\n", rl_id);
+
+    if (rl_id == 0xEEAA){
         return status;
+	}
 
     return -1;
 }
@@ -5109,9 +5111,14 @@ int VL53L0X::InitSensor(uint8_t NewAddr)
    VL53L0X_On();
 
    status=IsPresent();
+
+   printf("Status0 = %d\n", status);
+
    if(!status)
    {
       VL53L0X_DataInit(Device);
+	  printf("Status1 = %d\n", status);
+
       if(status != VL53L0X_ERROR_NONE)
       {
            printf("Failed to init VL53L0X sensor!\n\r");
@@ -5120,19 +5127,22 @@ int VL53L0X::InitSensor(uint8_t NewAddr)
 
       // deduce silicon version
       status = VL53L0X_GetDeviceInfo(&MyDevice, &DeviceInfo);
-
+      printf("Status2 = %d\n", status);
 
       status=Prepare();
+	  printf("Status3 = %d\n", status);
+
       if(status != VL53L0X_ERROR_NONE)
       {
          printf("Failed to prepare VL53L0X!\n\r");
          return status;
       }
 
-
       if(NewAddr!=VL53L0x_DEFAULT_DEVICE_ADDRESS)
       {
          status=SetDeviceAddress(NewAddr);
+		 printf("Status4 = %d\n", status);
+
          if(status)
          {
             printf("Failed to change I2C address!\n\r");
@@ -5145,6 +5155,8 @@ int VL53L0X::InitSensor(uint8_t NewAddr)
          return VL53L0X_ERROR_INVALID_PARAMS;
       }
    }
+   printf("Status5 = %d\n", status);
+
    return status;
 }
 

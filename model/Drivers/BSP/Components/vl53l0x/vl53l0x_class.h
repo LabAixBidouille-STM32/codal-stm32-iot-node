@@ -43,12 +43,15 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xxI2C.h"
+#include "stm32l4xxPin.h"
 #include "codal_target_hal.h"
 #include "PinNumber.h"
 #include "pinmap.h"
 #include "RangeSensor.h"
 #include "vl53l0x_def.h"
 #include "vl53l0x_platform.h"
+#include "stm32l475e_iot01_sensor.h"
+
 
 
 /**
@@ -299,14 +302,13 @@ class VL53L0X : public RangeSensor
      * @param[in] &pin_gpio1 pin Mbed InterruptIn PinName to be used as component GPIO_1 INT
      * @param[in] DevAddr device address, 0x29 by default
      */
-    VL53L0X(codal::STM32L4xxI2C *i2c, codal::PinNumber pin, codal::PinNumber pin_gpio1, uint8_t DevAddr=VL53L0x_DEFAULT_DEVICE_ADDRESS) : RangeSensor(), dev_i2c(i2c), gpio0(pin), gpio1Int(pin_gpio1)
+    VL53L0X(codal::STM32L4xxI2C *i2c, codal::STM32L4xxPin& pin, codal::STM32L4xxPin& pin_gpio1, uint8_t DevAddr=VL53L0x_DEFAULT_DEVICE_ADDRESS) : RangeSensor(), dev_i2c(i2c), gpio0(pin), gpio1Int(pin_gpio1)
     {
-		memset(&MyDevice, 0, sizeof(MyDevice));
+	   memset(&MyDevice, 0, sizeof(MyDevice));
        MyDevice.I2cDevAddr = DevAddr;
        MyDevice.comms_type = 1; // VL53L0X_COMMS_I2C
        Device = &MyDevice;
-	   if(gpio0 != codal::PinNumber::NC)
-			digital_io_init(gpio0, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL);
+	   gpio0.setDigitalValue(0);//Sensor Off
     }
     
    /** Destructor
@@ -324,9 +326,8 @@ class VL53L0X : public RangeSensor
     /* turns on the sensor */
     virtual void VL53L0X_On(void)
     {
-       if(gpio0 != codal::PinNumber::NC)
-			digitalWrite(gpio0, 1);
-       target_wait(10);
+       gpio0.setDigitalValue(1);
+       target_wait(100);
     }
 
 	/**
@@ -336,9 +337,8 @@ class VL53L0X : public RangeSensor
     /* turns off the sensor */
     virtual void VL53L0X_Off(void)
     {
-       if(gpio0 != codal::PinNumber::NC)
-         digitalWrite(gpio0, 0);
-       target_wait(10);
+       gpio0.setDigitalValue(0);
+       target_wait(100);
     }
 
 	/**
@@ -806,8 +806,8 @@ class VL53L0X : public RangeSensor
     /* IO Device */
     codal::STM32L4xxI2C *dev_i2c;
     /* Digital out pin */
-	codal::PinNumber gpio0;
-	codal::PinNumber gpio1Int;
+	codal::STM32L4xxPin& gpio0;
+	codal::STM32L4xxPin& gpio1Int;
     /* Device data */
 	VL53L0X_Dev_t MyDevice;
     VL53L0X_DEV Device;
