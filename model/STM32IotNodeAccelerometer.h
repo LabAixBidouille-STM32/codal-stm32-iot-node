@@ -27,6 +27,8 @@ namespace codal
     * Constructor.
     */
     STM32IotNodeAccelerometer(CoordinateSpace& coordinateSpace );
+    virtual int setPeriod(int period);
+
 
     using Accelerometer::getPeriod;
     using Accelerometer::getRange;
@@ -71,7 +73,11 @@ namespace codal
     private:
     uint8_t getBestAdaptedODRValue();
     uint8_t getBestAdaptedFSValue();
-    };
+    /*
+     * Event Handler for periodic sample timer
+     */
+    void onSampleEvent(Event);
+  };
 }
 
 #endif

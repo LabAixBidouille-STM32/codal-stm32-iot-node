@@ -4,6 +4,11 @@
   */
 
 #include "CodalConfig.h"
+#include "ErrorNo.h"
+#include "CodalCompat.h"
+#include "CodalFiber.h"
+#include "Timer.h"
+#include "EventModel.h"
 #include "STM32IotNode.h"
 #include "STM32IotNodeAccelerometer.h"
 
@@ -21,10 +26,13 @@ namespace codal
     isInitialized(false),
     previousSampleTime(0)
   {
-    samplePeriod = 50;
     previousSampleTime = system_timer_current_time();
 
     configure();
+
+    // Configure for a 20 Hz update frequency by default.
+    if(EventModel::defaultEventBus)
+        EventModel::defaultEventBus->listen(this->id, SENSOR_UPDATE_NEEDED, this, &STM32IotNodeAccelerometer::onSampleEvent, MESSAGE_BUS_LISTENER_IMMEDIATE);
 
     // Ensure we're scheduled to don't update the data periodically
     status &= ~DEVICE_COMPONENT_STATUS_IDLE_TICK;
@@ -32,6 +40,14 @@ namespace codal
     // Indicate that we're up and running.
     status |= DEVICE_COMPONENT_RUNNING;
   }
+
+/*
+ * Event Handler for periodic sample timer
+ */
+void STM32IotNodeAccelerometer::onSampleEvent(Event)
+{
+    requestUpdate();
+}
 
   uint8_t STM32IotNodeAccelerometer::getBestAdaptedODRValue(){
     if ( !samplePeriod )
@@ -73,6 +89,12 @@ namespace codal
     samplePeriod = 1000.0f / frequency;
     return odr;
   }
+
+int STM32IotNodeAccelerometer::setPeriod(int period){
+  int status = Accelerometer::setPeriod(period);
+  system_timer_event_every(this->samplePeriod, this->id, SENSOR_UPDATE_NEEDED);
+  return status;
+}
 
   uint8_t STM32IotNodeAccelerometer::getBestAdaptedFSValue(){
     if ( !sampleRange )
@@ -153,6 +175,7 @@ namespace codal
   */
   int STM32IotNodeAccelerometer::requestUpdate()
   {
+    system_timer_event_every(this->samplePeriod, this->id, SENSOR_UPDATE_NEEDED);
     CODAL_TIMESTAMP actualTime = system_timer_current_time();
     CODAL_TIMESTAMP delta = actualTime - previousSampleTime;
     if(delta > samplePeriod || previousSampleTime > actualTime){
