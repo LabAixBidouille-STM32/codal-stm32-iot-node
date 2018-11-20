@@ -8,8 +8,8 @@
 using namespace codal;
 
 void onSampleEvent(Event e){
-        uint32_t distance = default_device_instance->distance.getValue();
-        printf("DISTANCE = %ld mm\n", distance);
+        //uint32_t distance = default_device_instance->distance.getValue();
+        //printf("DISTANCE = %ld mm\n", distance);
 }
 
 void VL53L0X_main(codal::STM32IotNode& iotNode){
