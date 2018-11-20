@@ -24,7 +24,9 @@ STM32IotNode::STM32IotNode()
     i2c1(io.sda, io.scl),
     i2c2(io.sda2, io.scl2),
     coordinateSpace(SIMPLE_CARTESIAN, false, COORDINATE_SPACE_ROTATED_0),
-    accelerometer(coordinateSpace)
+    accelerometer(coordinateSpace),
+    gyroscope(coordinateSpace),
+    magnetometer(coordinateSpace)
     //ble(BLE::Instance())
 {
     // Clear our status

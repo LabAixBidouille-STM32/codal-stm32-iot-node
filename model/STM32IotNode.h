@@ -20,6 +20,8 @@
 #include "STM32IotNodePressure.h"
 #include "STM32IotNodeDistance.h"
 #include "STM32IotNodeAccelerometer.h"
+#include "STM32IotNodeGyroscope.h"
+#include "STM32IotNodeMagnetometer.h"
 
 // Status flag values
 #define DEVICE_INITIALIZED 0x01
@@ -55,6 +57,8 @@ namespace codal
             STM32IotNodeHumidity humidity;
             STM32IotNodePressure pressure;
             STM32IotNodeAccelerometer accelerometer;
+            STM32IotNodeGyroscope gyroscope;
+            STM32IotNodeMagnetometer magnetometer;
             
             //BLE& ble;
             

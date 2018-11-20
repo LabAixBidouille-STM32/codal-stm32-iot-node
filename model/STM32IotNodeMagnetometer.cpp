@@ -16,13 +16,34 @@ namespace codal
     * Create a representation of the accelerometer on the STM32 IOT node
     *
     */
-  STM32IotNodeMagnetometer::STM32IotNodeMagnetometer( STM32L4xxI2C& i2c, CoordinateSpace& coordinateSpace )
+  STM32IotNodeMagnetometer::STM32IotNodeMagnetometer(CoordinateSpace& coordinateSpace )
   : Compass( coordinateSpace ), 
-    _i2c( i2c ),
     magnetoDrv(&Lis3mdlMagDrv),
-    isInitialized(false)
+    isInitialized(false),
+    previousSampleTime(0)
   {
+    previousSampleTime = system_timer_current_time();
+
+    configure();
+
+    // Configure for a 20 Hz update frequency by default.
+    if(EventModel::defaultEventBus)
+        EventModel::defaultEventBus->listen(this->id, SENSOR_UPDATE_NEEDED, this, &STM32IotNodeMagnetometer::onSampleEvent, MESSAGE_BUS_LISTENER_IMMEDIATE);
+
+    // Ensure we're scheduled to don't update the data periodically
+    status &= ~DEVICE_COMPONENT_STATUS_IDLE_TICK;
+    status &= ~DEVICE_COMPONENT_STATUS_SYSTEM_TICK;
+    // Indicate that we're up and running.
+    status |= DEVICE_COMPONENT_RUNNING;
   }
+
+  /*
+ * Event Handler for periodic sample timer
+ */
+void STM32IotNodeMagnetometer::onSampleEvent(Event)
+{
+    requestUpdate();
+}
 
   uint8_t STM32IotNodeMagnetometer::getBestAdaptedODRValue(){
     if ( !samplePeriod )
@@ -70,6 +91,12 @@ namespace codal
     return ret;  
   }
 
+int STM32IotNodeMagnetometer::setPeriod(int period){
+  int status = Compass::setPeriod(period);
+  system_timer_event_every(this->samplePeriod, this->id, SENSOR_UPDATE_NEEDED);
+  return status;
+}
+
   /**
   * Poll to see if new data is available from the hardware. If so, update it.
   * n.b. it is not necessary to explicitly call this function to update data
@@ -79,8 +106,17 @@ namespace codal
   * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
   *
   */
-  int STM32IotNodeMagnetometer::requestUpdate()
-  {
+  int STM32IotNodeMagnetometer::requestUpdate(){
+    system_timer_event_every(this->samplePeriod, this->id, SENSOR_UPDATE_NEEDED);
+    CODAL_TIMESTAMP actualTime = system_timer_current_time();
+    CODAL_TIMESTAMP delta = actualTime - previousSampleTime;
+    if(delta > samplePeriod || previousSampleTime > actualTime){
+      return updateSample();
+    }
+    return DEVICE_OK;
+  }
+
+  int STM32IotNodeMagnetometer::updateSample(){
     if ( !isInitialized )
       configure();
     int16_t piData[3];
@@ -90,9 +126,9 @@ namespace codal
       if(magnetoDrv->GetXYZ!= NULL)
       {
         magnetoDrv->GetXYZ(piData);
-        sample.x = piData[0] / 100;
-        sample.y = piData[1] / 100;
-        sample.z = piData[2] / 100;
+        sample.x = piData[0];
+        sample.y = piData[1];
+        sample.z = piData[2];
         return DEVICE_OK;
       }
     }

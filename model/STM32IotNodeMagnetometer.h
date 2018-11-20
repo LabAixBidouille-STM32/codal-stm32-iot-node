@@ -18,16 +18,16 @@ namespace codal
    */
  class STM32IotNodeMagnetometer : public Compass
  {
-   STM32L4xxI2C& _i2c;
    MAGNETO_DrvTypeDef* magnetoDrv;
    bool isInitialized;
+   CODAL_TIMESTAMP previousSampleTime;
    public:
    /**
     * Constructor.
     */
-    STM32IotNodeMagnetometer( STM32L4xxI2C& i2c, CoordinateSpace& coordinateSpace );
+    STM32IotNodeMagnetometer(CoordinateSpace& coordinateSpace);
 
-   protected:
+    virtual int setPeriod(int period);
 
     /**
      * Configures the accelerometer for G range and sample rate defined
@@ -55,8 +55,14 @@ namespace codal
      */
     virtual int requestUpdate();
 
+    int updateSample();
+
     private:
     uint8_t getBestAdaptedODRValue();
+    /*
+     * Event Handler for periodic sample timer
+     */
+    void onSampleEvent(Event);
     };
 }
 
