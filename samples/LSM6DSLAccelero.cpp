@@ -6,10 +6,10 @@
 using namespace codal;
 
 void onSampleEvent(Event e){
-        float sensor_value = default_device_instance->accelerometer.getX();
-        int isensor_value  = (int) sensor_value;
-        int dsensor_value = int((sensor_value - isensor_value)*10.);
-        printf("ACCELERATION X = %d.%d \n", isensor_value, dsensor_value);
+    default_device_instance->sleep(100);
+    Sample3D sample = default_device_instance->accelerometer.getSample();
+    printf("(%ld) ACCELERATION  = |X : %d, Y : %d, Z : %d|\n", system_timer_current_time(),sample.x, sample.y, sample.z);
+        
 }
 
 void LSM6DSLAccelero_main(codal::STM32IotNode& iotNode){
@@ -17,10 +17,14 @@ void LSM6DSLAccelero_main(codal::STM32IotNode& iotNode){
     printf("*******************************************\n");
     printf("*     Demonstration de l'accelerometre    *\n");
     printf("*******************************************\n");
-    iotNode.sleep(1000);
+    
+    EventModel::defaultEventBus->listen(DEVICE_ID_ACCELEROMETER, DEVICE_EVT_ANY, onSampleEvent);
+    EventModel::defaultEventBus->listen(DEVICE_ID_GESTURE, DEVICE_EVT_ANY, onSampleEvent);
 
-    EventModel::defaultEventBus->listen(DEVICE_ID_ACCELEROMETER, SENSOR_UPDATE_NEEDED, onSampleEvent);
+    iotNode.sleep(500);
 
+    iotNode.accelerometer.requestUpdate();
+    
     while(1) {
         iotNode.io.led.setDigitalValue(1);
         iotNode.sleep(1000);

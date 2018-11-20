@@ -4,6 +4,7 @@
 #include "CodalComponent.h"
 #include "CodalDevice.h"
 #include "CodalFiber.h"
+#include "CodalDmesg.h"
 
 #include "NotifyEvents.h"
 #include "MessageBus.h"
@@ -21,7 +22,7 @@
 #include "STM32IotNodeAccelerometer.h"
 
 // Status flag values
-#define DEVICE_INITIALIZED                    0x01
+#define DEVICE_INITIALIZED 0x01
 
 /**
  * Class definition for a STM32 IOT node.
@@ -90,12 +91,15 @@ namespace codal
              * A periodic callback invoked by the fiber scheduler idle thread.
              * We use this for any low priority, background housekeeping.
              */
-            virtual void idleCallback();
+            virtual void idleCallback(){
+                codal_dmesg_flush();
+            }
 
             /**
              * A periodic callback invoked by the fiber scheduler every SCHEDULER_TICK_PERIOD_MS.
              */
-            virtual void periodicCallback();
+            virtual void periodicCallback(){
+            }
 
             /**
              * Determine the time since this board was last reset.
@@ -104,8 +108,7 @@ namespace codal
              *
              * @note This will value overflow after 1.6 months.
              */
-            //TODO: handle overflow case.
-            unsigned long systemTime(){
+            CODAL_TIMESTAMP systemTime(){
                 return system_timer_current_time();
             }
     };

@@ -1,7 +1,7 @@
 #include "STM32IotNode.h"
-#include "CodalDmesg.h"
 
 using namespace codal;
+
 void STM32IotNode_dmesg_flush();
 
 STM32IotNode *codal::default_device_instance = nullptr;
@@ -60,7 +60,7 @@ int STM32IotNode::init()
     serial.init();
     i2c2.init();
 
-    codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
+    //codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
 
     //distance.init();
     
@@ -79,37 +79,6 @@ int STM32IotNode::init()
     return DEVICE_OK;
 }
 
-/**
-  * A periodic callback invoked by the fiber scheduler idle thread.
-  * We use this for any low priority, background housekeeping.
-  *
-  */
-void STM32IotNode::idleCallback()
-{
-    codal_dmesg_flush();
-}
-
-WEAK int __io_putchar(int ch);
-
-void STM32IotNode::periodicCallback(){}
-
-void STM32IotNode_dmesg_flush()
-{
-#if CONFIG_ENABLED(DMESG_SERIAL_DEBUG)
-
-#if DEVICE_DMESG_BUFFER_SIZE > 0
-    if (codalLogStore.ptr > 0 && default_device_instance)
-    {
-        for (uint32_t i=0; i<codalLogStore.ptr; i++)
-            __io_putchar(codalLogStore.buffer[i]);
-
-        codalLogStore.ptr = 0;
-    }
-#endif
-
-#endif
-}
-
 int target_seed_random(uint32_t rand)
 {
     return codal::seed_random(rand);
@@ -118,4 +87,20 @@ int target_seed_random(uint32_t rand)
 int target_random(int max)
 {
     return codal::random(max);
+}
+
+WEAK int __io_putchar(int ch);
+
+void STM32IotNode_dmesg_flush()
+{
+#if CONFIG_ENABLED(DMESG_SERIAL_DEBUG)
+#if DEVICE_DMESG_BUFFER_SIZE > 0
+    if (codalLogStore.ptr > 0 && default_device_instance)
+    {
+        for (uint32_t i=0; i<codalLogStore.ptr; i++)
+            __io_putchar(codalLogStore.buffer[i]);
+        codalLogStore.ptr = 0;
+    }
+#endif
+#endif
 }

@@ -9,7 +9,6 @@
 
 namespace codal
 {
-
   /**
     * Constructor.
     *
@@ -19,8 +18,19 @@ namespace codal
   STM32IotNodeAccelerometer::STM32IotNodeAccelerometer(CoordinateSpace& coordinateSpace )
   : Accelerometer( coordinateSpace ), 
     accelerometerDrv(&Lsm6dslAccDrv),
-    isInitialized(false)
+    isInitialized(false),
+    previousSampleTime(0)
   {
+    samplePeriod = 50;
+    previousSampleTime = system_timer_current_time();
+
+    configure();
+
+    // Ensure we're scheduled to don't update the data periodically
+    status &= ~DEVICE_COMPONENT_STATUS_IDLE_TICK;
+    status &= ~DEVICE_COMPONENT_STATUS_SYSTEM_TICK;
+    // Indicate that we're up and running.
+    status |= DEVICE_COMPONENT_RUNNING;
   }
 
   uint8_t STM32IotNodeAccelerometer::getBestAdaptedODRValue(){
@@ -96,7 +106,7 @@ namespace codal
   * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the accelerometer could not be configured.
   *
   */
-  int STM32IotNodeAccelerometer::configure( )
+  int STM32IotNodeAccelerometer::configure()
   {
     int ret = DEVICE_OK;
     uint16_t ctrl = 0x0000;
@@ -124,6 +134,11 @@ namespace codal
     /* Configure the ACCELERO accelerometer main parameters */
     accelerometerDrv->Init(ctrl);
     isInitialized = true;
+    
+    // Indicate that we're up and running.
+    status |= DEVICE_INITIALIZED;
+    status |= DEVICE_COMPONENT_RUNNING;
+    
     return ret;
   }
 
@@ -138,7 +153,15 @@ namespace codal
   */
   int STM32IotNodeAccelerometer::requestUpdate()
   {
-    printf("STM32IotNodeAccelerometer::requestUpdate()\n");
+    CODAL_TIMESTAMP actualTime = system_timer_current_time();
+    CODAL_TIMESTAMP delta = actualTime - previousSampleTime;
+    if(delta > samplePeriod || previousSampleTime > actualTime){
+      return updateSample();
+    }
+    return DEVICE_OK;
+  }
+
+  int STM32IotNodeAccelerometer::updateSample(){
     if ( !isInitialized )
       configure();
     int16_t piData[3];
@@ -148,13 +171,15 @@ namespace codal
       if(accelerometerDrv->GetXYZ!= NULL)
       {
         accelerometerDrv->GetXYZ(piData);
+
         sample.x = piData[0] / 100;
         sample.y = piData[1] / 100;
         sample.z = piData[2] / 100;
+        previousSampleTime = system_timer_current_time();
+        update(sample);
         return DEVICE_OK;
       }
     }
     return DEVICE_I2C_ERROR;
   }
-
 }

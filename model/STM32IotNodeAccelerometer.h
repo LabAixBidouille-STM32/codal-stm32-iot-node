@@ -16,10 +16,11 @@ namespace codal
   /**
    * Represents the accelerometer on the STM32 IOT node.
    */
- class STM32IotNodeAccelerometer : protected Accelerometer
+ class STM32IotNodeAccelerometer : public Accelerometer
  {
    ACCELERO_DrvTypeDef* accelerometerDrv;
    bool isInitialized;
+   CODAL_TIMESTAMP previousSampleTime;
    
    public:
    /**
@@ -37,8 +38,6 @@ namespace codal
     using Accelerometer::getPitchRadians;
     using Accelerometer::getRoll;
     using Accelerometer::getRollRadians;
-
-   protected:
 
     /**
      * Configures the accelerometer for G range and sample rate defined
@@ -64,7 +63,10 @@ namespace codal
      * @note This method should be overidden by the hardware driver to implement the requested
      * changes in hardware.
      */
+    
     virtual int requestUpdate();
+
+    int updateSample();
 
     private:
     uint8_t getBestAdaptedODRValue();
