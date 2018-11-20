@@ -19,10 +19,10 @@
         "DEVICE_TAG": 0,
         "DEVICE_USB": 0,
         "DMESG_SERIAL_DEBUG": 1,
-        "EVENT_LISTENER_DEFAULT_FLAGS": "MESSAGE_BUS_LISTENER_QUEUE_IF_BUSY",
+        "EVENT_LISTENER_DEFAULT_FLAGS": "MESSAGE_BUS_LISTENER_DROP_IF_BUSY",
         "MESSAGE_BUS_LISTENER_MAX_QUEUE_DEPTH": 10,
         "PROCESSOR_WORD_TYPE": "uint32_t",
-        "SCHEDULER_TICK_PERIOD_US": 2000,
+        "SCHEDULER_TICK_PERIOD_US": 1000,
         "USE_ACCEL_LSB": 0
     },
     "cpp_flags": "-std=c++11 -Wno-register -D__weak=\"__attribute__((weak))\" -D__packed=\"__attribute__((__packed__))\" -fwrapv -fno-rtti -fno-threadsafe-statics -fno-exceptions -fno-unwind-tables -Wl,--gc-sections -Wl,--sort-common -Wl,--sort-section=alignment -Wno-array-bounds -DUSE_HAL_DRIVER -DSTM32L475xx -g -fstack-usage -Wall",
