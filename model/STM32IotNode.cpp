@@ -19,6 +19,7 @@ STM32IotNode::STM32IotNode()
     messageBus(), 
     io(),
     serial(io.tx, io.rx),
+    buttonUSER(io.btnUser, DEVICE_ID_BUTTON_A, DEVICE_BUTTON_ALL_EVENTS, ACTIVE_LOW),
     spi1(io.miso, io.mosi, io.sclk), 
     spi3(io.miso3, io.mosi3, io.sclk3),
     i2c1(io.sda, io.scl),

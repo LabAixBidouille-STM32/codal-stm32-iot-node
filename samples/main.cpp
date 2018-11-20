@@ -29,8 +29,8 @@
     #include "VL53L0X.h"
     #define SAMPLE_MAIN VL53L0X_main
 #elif defined(BUTTON_SAMPLE)
-    #include "Button.h"
-    #define SAMPLE_MAIN BUTTON_main
+    #include "ButtonSample.h"
+    #define SAMPLE_MAIN ButtonSample_main
 #elif defined(GPIO_SAMPLE)
     #include "GPIO.h"
     #define SAMPLE_MAIN GPIO_main

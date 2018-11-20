@@ -9,6 +9,7 @@
 #include "NotifyEvents.h"
 #include "MessageBus.h"
 
+#include "Button.h"
 #include "STM32IotNodeIO.h"
 #include "STM32SPBTLE.h"
 #include "stm32l4xxTimer.h"
@@ -43,6 +44,8 @@ namespace codal
             STM32IotNodeIO io;
 
             STM32L4xxSimpleSerial serial;
+
+            Button buttonUSER;
 
             STM32L4xxSPI spi1;//External on arduino stardard pins
             STM32L4xxSPI spi3;//Internal used by BLE, SubGHz and wifi
