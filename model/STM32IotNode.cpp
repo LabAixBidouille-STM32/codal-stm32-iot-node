@@ -22,7 +22,9 @@ STM32IotNode::STM32IotNode()
     spi1(io.miso, io.mosi, io.sclk), 
     spi3(io.miso3, io.mosi3, io.sclk3),
     i2c1(io.sda, io.scl),
-    i2c2(io.sda2, io.scl2)
+    i2c2(io.sda2, io.scl2),
+    coordinateSpace(SIMPLE_CARTESIAN, false, COORDINATE_SPACE_ROTATED_0),
+    accelerometer(coordinateSpace)
     //ble(BLE::Instance())
 {
     // Clear our status
@@ -58,19 +60,20 @@ int STM32IotNode::init()
     serial.init();
     i2c2.init();
 
-    distance.init();
+    codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
+
+    //distance.init();
     
     // Bring up fiber scheduler.
     scheduler_init(messageBus);
 
     for(int i = 0; i < DEVICE_COMPONENT_COUNT; i++)
     {
-        if(CodalComponent::components[i]){
+        if(CodalComponent::components[i] != nullptr){
             CodalComponent::components[i]->init();
         }
     }
 
-    codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
     status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;
 
     return DEVICE_OK;
@@ -86,22 +89,24 @@ void STM32IotNode::idleCallback()
     codal_dmesg_flush();
 }
 
+WEAK int __io_putchar(int ch);
+
 void STM32IotNode::periodicCallback(){}
 
 void STM32IotNode_dmesg_flush()
 {
 #if CONFIG_ENABLED(DMESG_SERIAL_DEBUG)
-/*
+
 #if DEVICE_DMESG_BUFFER_SIZE > 0
     if (codalLogStore.ptr > 0 && default_device_instance)
     {
         for (uint32_t i=0; i<codalLogStore.ptr; i++)
-            ((STM32IotNode *)default_device_instance)->serial.putc(codalLogStore.buffer[i]);
+            __io_putchar(codalLogStore.buffer[i]);
 
         codalLogStore.ptr = 0;
     }
 #endif
-*/
+
 #endif
 }
 

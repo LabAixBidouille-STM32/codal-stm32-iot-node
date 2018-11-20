@@ -18,14 +18,14 @@ namespace codal
    */
  class STM32IotNodeAccelerometer : protected Accelerometer
  {
-   STM32L4xxI2C& _i2c;
    ACCELERO_DrvTypeDef* accelerometerDrv;
    bool isInitialized;
+   
    public:
    /**
     * Constructor.
     */
-    STM32IotNodeAccelerometer( STM32L4xxI2C& i2c, CoordinateSpace& coordinateSpace );
+    STM32IotNodeAccelerometer(CoordinateSpace& coordinateSpace );
 
     using Accelerometer::getPeriod;
     using Accelerometer::getRange;

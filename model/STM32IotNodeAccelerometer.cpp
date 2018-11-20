@@ -16,9 +16,8 @@ namespace codal
     * Create a representation of the accelerometer on the STM32 IOT node
     *
     */
-  STM32IotNodeAccelerometer::STM32IotNodeAccelerometer( STM32L4xxI2C& i2c, CoordinateSpace& coordinateSpace )
+  STM32IotNodeAccelerometer::STM32IotNodeAccelerometer(CoordinateSpace& coordinateSpace )
   : Accelerometer( coordinateSpace ), 
-    _i2c( i2c ),
     accelerometerDrv(&Lsm6dslAccDrv),
     isInitialized(false)
   {
@@ -124,7 +123,7 @@ namespace codal
 
     /* Configure the ACCELERO accelerometer main parameters */
     accelerometerDrv->Init(ctrl);
-
+    isInitialized = true;
     return ret;
   }
 
@@ -139,6 +138,7 @@ namespace codal
   */
   int STM32IotNodeAccelerometer::requestUpdate()
   {
+    printf("STM32IotNodeAccelerometer::requestUpdate()\n");
     if ( !isInitialized )
       configure();
     int16_t piData[3];
