@@ -55,4 +55,5 @@ int main()
 {
     iotNode.init();
     SAMPLE_MAIN(iotNode);
+    release_fiber();
 }
