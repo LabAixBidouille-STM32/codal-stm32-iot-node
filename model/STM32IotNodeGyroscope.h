@@ -18,15 +18,16 @@ namespace codal
    */
  class STM32IotNodeGyroscope : protected Gyroscope
  {  
-   STM32L4xxI2C& _i2c;
    GYRO_DrvTypeDef* gyroscopeDrv;
    bool isInitialized;
+   CODAL_TIMESTAMP previousSampleTime;
+
 
    public:
    /**
     * Constructor.
     */
-    STM32IotNodeGyroscope( STM32L4xxI2C& i2c, CoordinateSpace& coordinateSpace );
+    STM32IotNodeGyroscope(CoordinateSpace& coordinateSpace );
 
     using Gyroscope::getPeriod;
     using Gyroscope::getRange;
@@ -34,8 +35,6 @@ namespace codal
     using Gyroscope::getX;
     using Gyroscope::getY;
     using Gyroscope::getZ;
-
-   protected:
 
     /**
      * Configures the gyroscope for G range and sample rate defined
@@ -62,11 +61,16 @@ namespace codal
      * changes in hardware.
      */
     virtual int requestUpdate();
+
+    int updateSample();
     
     private:
     uint8_t getBestAdaptedODRValue();
     uint8_t getBestAdaptedFSValue();
-
+    /*
+     * Event Handler for periodic sample timer
+     */
+    void onSampleEvent(Event);
     };
 }
 

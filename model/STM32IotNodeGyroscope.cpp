@@ -15,14 +15,32 @@ namespace codal
     * Create a representation of the accelerometer on the STM32 IOT node
     *
     */
-  STM32IotNodeGyroscope::STM32IotNodeGyroscope( STM32L4xxI2C& i2c, CoordinateSpace& coordinateSpace )
+  STM32IotNodeGyroscope::STM32IotNodeGyroscope( CoordinateSpace& coordinateSpace )
   : Gyroscope( coordinateSpace ),
-    _i2c( i2c ),
     gyroscopeDrv(&Lsm6dslGyroDrv),
-    isInitialized(false)
+    isInitialized(false),
+    previousSampleTime(0)
   {
+    previousSampleTime = system_timer_current_time();
+    configure();
+    // Configure for a 20 Hz update frequency by default.
+    if(EventModel::defaultEventBus)
+        EventModel::defaultEventBus->listen(this->id, SENSOR_UPDATE_NEEDED, this, &STM32IotNodeGyroscope::onSampleEvent, MESSAGE_BUS_LISTENER_IMMEDIATE);
+
+    // Ensure we're scheduled to don't update the data periodically
+    status &= ~DEVICE_COMPONENT_STATUS_IDLE_TICK;
+    status &= ~DEVICE_COMPONENT_STATUS_SYSTEM_TICK;
+    // Indicate that we're up and running.
+    status |= DEVICE_COMPONENT_RUNNING;
   }
 
+/*
+ * Event Handler for periodic sample timer
+ */
+void STM32IotNodeGyroscope::onSampleEvent(Event)
+{
+    requestUpdate();
+}
 
   uint8_t STM32IotNodeGyroscope::getBestAdaptedODRValue(){
     if ( !samplePeriod )
@@ -138,7 +156,18 @@ namespace codal
   * @return DEVICE_OK on success, DEVICE_I2C_ERROR if the update fails.
   *
   */
-  int STM32IotNodeGyroscope::requestUpdate()
+   int STM32IotNodeGyroscope::requestUpdate()
+  {
+    system_timer_event_every(this->samplePeriod, this->id, SENSOR_UPDATE_NEEDED);
+    CODAL_TIMESTAMP actualTime = system_timer_current_time();
+    CODAL_TIMESTAMP delta = actualTime - previousSampleTime;
+    if(delta > samplePeriod || previousSampleTime > actualTime){
+      return updateSample();
+    }
+    return DEVICE_OK;
+  }
+
+  int STM32IotNodeGyroscope::updateSample()
   {
     if ( !isInitialized )
       configure();
@@ -152,6 +181,8 @@ namespace codal
         sample.x = pfData[0] / 100;
         sample.y = pfData[1] / 100;
         sample.z = pfData[2] / 100;
+        previousSampleTime = system_timer_current_time();
+        update(sample);
         return DEVICE_OK;
       }
     }
