@@ -25,7 +25,7 @@
         "DMESG_SERIAL_DEBUG" : 1,
         "CODAL_DEBUG":"CODAL_DEBUG_ENABLED",
         "DEVICE_USB":0,
-        "CODAL_TIMESTAMP":"uint64_t",
+        "CODAL_TIMESTAMP":"uint32_t",
         "PROCESSOR_WORD_TYPE":"uint32_t"
     },
     "definitions":"-DSTM32L4 -DSTM32L475xx -DDMESG_SERIAL_DEBUG -include codal-stm32-iot-node/inc/localconf.h",
