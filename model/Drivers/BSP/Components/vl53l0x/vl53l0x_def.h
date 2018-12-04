@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright © 2016, STMicroelectronics International N.V.
+Copyright (c) 2017, STMicroelectronics International N.V.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -78,12 +78,12 @@ extern "C" {
 /** VL53L0X PAL IMPLEMENTATION major version */
 #define VL53L0X_IMPLEMENTATION_VER_MAJOR	  1
 /** VL53L0X PAL IMPLEMENTATION minor version */
-#define VL53L0X_IMPLEMENTATION_VER_MINOR	  1
+#define VL53L0X_IMPLEMENTATION_VER_MINOR	  0
 /** VL53L0X PAL IMPLEMENTATION sub version */
-#define VL53L0X_IMPLEMENTATION_VER_SUB	  21
+#define VL53L0X_IMPLEMENTATION_VER_SUB	  0
 /** VL53L0X PAL IMPLEMENTATION sub version */
-#define VL53L0X_IMPLEMENTATION_VER_REVISION	  4823
-#define VL53L0X_DEFAULT_MAX_LOOP 2000
+#define VL53L0X_IMPLEMENTATION_VER_REVISION	  4570
+#define VL53L0X_DEFAULT_MAX_LOOP 200
 #define VL53L0X_MAX_STRING_LENGTH 32
 
 
@@ -463,8 +463,6 @@ typedef struct {
 	uint16_t SigmaEstEffAmbWidth;
 	/*!< Effective Ambient width for sigma estimate in 1/100th of ns
 	* e.g. 500 = 5.0ns */
-	uint8_t StopVariable;
-	/*!< StopVariable used during the stop sequence */
 	uint16_t targetRefRate;
 	/*!< Target Ambient Rate for Ref spad management */
 	FixPoint1616_t SigmaEstimate;

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright © 2016, STMicroelectronics International N.V.
+Copyright (c) 2017, STMicroelectronics International N.V.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -192,4 +192,3 @@ uint8_t InterruptThresholdSettings[] = {
 #endif
 
 #endif /* _VL53L0X_INTERRUPT_THRESHOLD_SETTINGS_H_ */
-
