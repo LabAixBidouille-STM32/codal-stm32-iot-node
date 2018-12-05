@@ -35,7 +35,7 @@ namespace codal
         EventModel::defaultEventBus->listen(this->id, SENSOR_UPDATE_NEEDED, this, &STM32IotNodeAccelerometer::onSampleEvent, MESSAGE_BUS_LISTENER_IMMEDIATE);
 
     // Ensure we're scheduled to don't update the data periodically
-    status &= ~DEVICE_COMPONENT_STATUS_IDLE_TICK;
+    status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;
     status &= ~DEVICE_COMPONENT_STATUS_SYSTEM_TICK;
     // Indicate that we're up and running.
     status |= DEVICE_COMPONENT_RUNNING;
@@ -92,7 +92,6 @@ void STM32IotNodeAccelerometer::onSampleEvent(Event)
 
 int STM32IotNodeAccelerometer::setPeriod(int period){
   int status = Accelerometer::setPeriod(period);
-  system_timer_event_every(this->samplePeriod, this->id, SENSOR_UPDATE_NEEDED);
   return status;
 }
 
@@ -175,7 +174,6 @@ int STM32IotNodeAccelerometer::setPeriod(int period){
   */
   int STM32IotNodeAccelerometer::requestUpdate()
   {
-    system_timer_event_every(this->samplePeriod, this->id, SENSOR_UPDATE_NEEDED);
     CODAL_TIMESTAMP actualTime = system_timer_current_time();
     CODAL_TIMESTAMP delta = actualTime - previousSampleTime;
     if(delta > samplePeriod || previousSampleTime > actualTime){
