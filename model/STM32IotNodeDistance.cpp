@@ -17,9 +17,8 @@ using namespace codal;
   *
   */
 STM32IotNodeDistance::STM32IotNodeDistance()
-: Sensor(DEVICE_ID_DISTANCE),
-  device(),
-  needInit(true)
+: Sensor(DEVICE_ID_DISTANCE, SENSOR_DEFAULT_SENSITIVITY, 500),
+  device()
 {
   memset(&device, 0, sizeof(device));
   device.I2cHandle = default_i2c_sensors_bus->getHandle();
@@ -51,7 +50,6 @@ int STM32IotNodeDistance::configure()
 {
   printf("STM32IotNodeDistance::configure()\n");
   target_wait(1000);
-  /* Initialize IO interface */
   SENSOR_IO_Init(); 
   
   uint16_t vl53l0x_id = 0; 
@@ -93,19 +91,6 @@ int STM32IotNodeDistance::configure()
   return DEVICE_OK;
 }
 
-
-/**
-  * Implement this function to receive a function call after the devices'
-  * device model has been instantiated.
-  */
-int STM32IotNodeDistance::init()
-{
-    if(!needInit)
-      return DEVICE_OK;
-    
-    needInit = false;
-    return configure();
-}
 /**
  * Poll to see if new data is available from the hardware. If so, update it.
  * n.b. it is not necessary to explicitly call this function to update data
@@ -118,16 +103,10 @@ int STM32IotNodeDistance::init()
 
 int STM32IotNodeDistance::readValue()
 {
-  if(needInit)
-    return 0;
-
+  init();
   uint16_t distance;
   VL53L0X_RangingMeasurementData_t RangingMeasurementData;
   VL53L0X_PerformSingleRangingMeasurement(&device, &RangingMeasurementData);
-
   distance = RangingMeasurementData.RangeMilliMeter;
-
-  printf("| distance [mm]: %d |  \n", distance);
   return distance;
-  return 0;
 }

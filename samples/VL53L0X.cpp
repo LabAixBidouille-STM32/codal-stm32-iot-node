@@ -7,8 +7,10 @@
 using namespace codal;
 
 void onSampleEvent(Event e){
+    if(default_device_instance != nullptr){
         uint32_t distance = default_device_instance->distance.getValue();
         printf("DISTANCE = %ld mm\n", distance);
+    }
 }
 
 void VL53L0X_main(codal::STM32IotNode& iotNode){
@@ -18,20 +20,13 @@ void VL53L0X_main(codal::STM32IotNode& iotNode){
     printf("*******************************************\n");
     iotNode.sleep(1000);
 
-    default_device_instance->distance.configure();
-    uint32_t distance;
-    VL53L0X_RangingMeasurementData_t RangingMeasurementData;
-    VL53L0X_PerformSingleRangingMeasurement(&default_device_instance->distance.device, &RangingMeasurementData);
+    EventModel::defaultEventBus->listen(DEVICE_ID_DISTANCE, SENSOR_UPDATED, onSampleEvent);
 
-    distance = RangingMeasurementData.RangeMilliMeter;
-    printf("| Distance [mm]: %ld |  \n", distance);
-    //default_device_instance->distance.needInit = false;
-    iotNode.sleep(1000);
-    EventModel::defaultEventBus->listen(DEVICE_ID_DISTANCE, SENSOR_UPDATE_NEEDED, onSampleEvent);
+    iotNode.distance.getValue();
 
     while(1) {
         iotNode.io.led.setDigitalValue(1);
-        iotNode.sleep(1000);
+        iotNode.sleep(1000);        
         iotNode.io.led.setDigitalValue(0);
         iotNode.sleep(1000);
     }

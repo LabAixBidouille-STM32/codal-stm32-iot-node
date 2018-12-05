@@ -23,16 +23,13 @@ namespace codal
    */
  class STM32IotNodeDistance : public Sensor
  {
-    public:
     VL53L0X_Dev_t device;
-    bool needInit;
  
+ public:
    /**
     * Constructor.
     */
     STM32IotNodeDistance();
-
-   public:
 
     /**
      * Configures the distance for millimeter range and sample rate defined
@@ -46,12 +43,6 @@ namespace codal
      * changes in hardware.
      */
     virtual int configure();
-
-    /**
-      * Implement this function to receive a function call after the devices'
-      * device model has been instantiated.
-      */
-    virtual int init();
 
     /**
      * Read the value from underlying hardware.
