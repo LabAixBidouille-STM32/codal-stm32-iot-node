@@ -19,7 +19,7 @@ void HTS221_TEMPERATURE_main(codal::STM32IotNode& iotNode){
     printf("*******************************************\n");
     iotNode.sleep(1000);
 
-    EventModel::defaultEventBus->listen(DEVICE_ID_THERMOMETER, SENSOR_UPDATE_NEEDED, onSampleEvent);
+    EventModel::defaultEventBus->listen(DEVICE_ID_THERMOMETER, SENSOR_UPDATED, onSampleEvent);
 
     while(1) {
         iotNode.io.led.setDigitalValue(1);
