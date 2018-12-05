@@ -46,6 +46,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
 #include "stm32l4xx_hal.h"
+#include "stm32l475e_iot01_sensor.h"
 #include "vl53l0x_def.h"
 #include "vl53l0x_api.h"
 
@@ -62,42 +63,17 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-    
-int _I2CWrite(VL53L0X_DEV Dev, uint8_t *pdata, uint32_t count) {
-    int status;
-    int i2c_time_out = I2C_TIME_OUT_BASE+ count* I2C_TIME_OUT_BYTE;
-
-    status = HAL_I2C_Master_Transmit(Dev->I2cHandle, Dev->I2cDevAddr, pdata, count, i2c_time_out);
-    
-    return status;
-}
-
-int _I2CRead(VL53L0X_DEV Dev, uint8_t *pdata, uint32_t count) {
-    int status;
-    int i2c_time_out = I2C_TIME_OUT_BASE+ count* I2C_TIME_OUT_BYTE;
-
-    status = HAL_I2C_Master_Receive(Dev->I2cHandle, Dev->I2cDevAddr|1, pdata, count, i2c_time_out);
-    
-    return status;
-}
 
 VL53L0X_Error VL53L0X_RdByte(VL53L0X_DEV Dev, uint8_t index, uint8_t *data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
+    
+    status_int = SENSOR_IO_ReadMultiple(Dev->I2cDevAddr, index, data, 1);
 
-    status_int = _I2CWrite(Dev, &index, 1);
-    
-    if( status_int ){
-        Status = VL53L0X_ERROR_CONTROL_INTERFACE;
-        goto done;
-    }
-    
-    status_int = _I2CRead(Dev, data, 1);
-    
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
-done:
+
     return Status;
 }
 
@@ -113,10 +89,7 @@ VL53L0X_Error VL53L0X_WriteMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata,
         return VL53L0X_ERROR_INVALID_PARAMS;
     }
     
-    _I2CBuffer[0] = index;
-    memcpy(&_I2CBuffer[1], pdata, count);
-    
-    status_int = _I2CWrite(Dev, _I2CBuffer, count + 1);
+    status_int = SENSOR_IO_WriteMultiple(Dev->I2cDevAddr, index, pdata, count);
     
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
@@ -130,19 +103,10 @@ VL53L0X_Error VL53L0X_ReadMulti(VL53L0X_DEV Dev, uint8_t index, uint8_t *pdata, 
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
     
-    status_int = _I2CWrite(Dev, &index, 1);
-    
-    if (status_int != 0) {
-        Status = VL53L0X_ERROR_CONTROL_INTERFACE;
-        goto done;
-    }
-    
-    status_int = _I2CRead(Dev, pdata, count);
-    
+    status_int = SENSOR_IO_ReadMultiple(Dev->I2cDevAddr, index, pdata, count);    
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }
-done:
     return Status;
 }
 
@@ -151,14 +115,7 @@ VL53L0X_Error VL53L0X_RdWord(VL53L0X_DEV Dev, uint8_t index, uint16_t *data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
-    status_int = _I2CWrite(Dev, &index, 1);
-
-    if( status_int ){
-        Status = VL53L0X_ERROR_CONTROL_INTERFACE;
-        goto done;
-    }
-    
-    status_int = _I2CRead(Dev, _I2CBuffer, 2);
+    status_int = SENSOR_IO_ReadMultiple(Dev->I2cDevAddr, index, _I2CBuffer, 2);
     
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
@@ -166,7 +123,7 @@ VL53L0X_Error VL53L0X_RdWord(VL53L0X_DEV Dev, uint8_t index, uint16_t *data) {
     }
 
     *data = ((uint16_t)_I2CBuffer[0]<<8) + (uint16_t)_I2CBuffer[1];
-done:
+    done:
     return Status;
 }
 
@@ -174,14 +131,7 @@ VL53L0X_Error VL53L0X_RdDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t *data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
-    status_int = _I2CWrite(Dev, &index, 1);
-    
-    if (status_int != 0) {
-        Status = VL53L0X_ERROR_CONTROL_INTERFACE;
-        goto done;
-    }
-    
-    status_int = _I2CRead(Dev, _I2CBuffer, 4);
+    status_int = SENSOR_IO_ReadMultiple(Dev->I2cDevAddr, index, _I2CBuffer, 4);
     
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
@@ -198,10 +148,7 @@ VL53L0X_Error VL53L0X_WrByte(VL53L0X_DEV Dev, uint8_t index, uint8_t data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
-    _I2CBuffer[0] = index;
-    _I2CBuffer[1] = data;
-
-    status_int = _I2CWrite(Dev, _I2CBuffer, 2);
+    status_int = SENSOR_IO_WriteMultiple(Dev->I2cDevAddr, index, &data, 1);;
     
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
@@ -214,11 +161,10 @@ VL53L0X_Error VL53L0X_WrWord(VL53L0X_DEV Dev, uint8_t index, uint16_t data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
 
-    _I2CBuffer[0] = index;
-    _I2CBuffer[1] = data >> 8;
-    _I2CBuffer[2] = data & 0x00FF;
+    _I2CBuffer[0] = data >> 8;
+    _I2CBuffer[1] = data & 0x00FF;
 
-    status_int = _I2CWrite(Dev, _I2CBuffer, 3);
+    status_int = SENSOR_IO_WriteMultiple(Dev->I2cDevAddr, index, _I2CBuffer, 2);
     
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
@@ -246,13 +192,14 @@ done:
 VL53L0X_Error VL53L0X_WrDWord(VL53L0X_DEV Dev, uint8_t index, uint32_t data) {
     VL53L0X_Error Status = VL53L0X_ERROR_NONE;
     int32_t status_int;
-    _I2CBuffer[0] = index;
-    _I2CBuffer[1] = (data >> 24) & 0xFF;
-    _I2CBuffer[2] = (data >> 16) & 0xFF;
-    _I2CBuffer[3] = (data >> 8)  & 0xFF;
-    _I2CBuffer[4] = (data >> 0 ) & 0xFF;
+    
+    _I2CBuffer[0] = (data >> 24) & 0xFF;
+    _I2CBuffer[1] = (data >> 16) & 0xFF;
+    _I2CBuffer[2] = (data >> 8)  & 0xFF;
+    _I2CBuffer[3] = (data >> 0 ) & 0xFF;
 
-    status_int = _I2CWrite(Dev, _I2CBuffer, 5);
+    status_int = SENSOR_IO_WriteMultiple(Dev->I2cDevAddr, index, _I2CBuffer, 4);
+    
     if (status_int != 0) {
         Status = VL53L0X_ERROR_CONTROL_INTERFACE;
     }

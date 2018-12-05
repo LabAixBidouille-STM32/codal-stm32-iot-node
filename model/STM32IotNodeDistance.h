@@ -7,7 +7,14 @@
 #include "stm32l4xxPin.h"
 #include "stm32l4xxI2C.h"
 #include "stm32l475e_iot01.h"
-#include "vl53l0x_class.h"
+#include "vl53l0x_def.h"
+#include "vl53l0x_api.h"
+#include "vl53l0x_tof.h"
+
+#define PROXIMITY_I2C_ADDRESS         ((uint16_t)0x0052)
+#define VL53L0X_ID                    ((uint16_t)0xEEAA)
+#define VL53L0X_XSHUT_Pin GPIO_PIN_6
+#define VL53L0X_XSHUT_GPIO_Port GPIOC
 
 namespace codal
 {
@@ -16,9 +23,10 @@ namespace codal
    */
  class STM32IotNodeDistance : public Sensor
  {
-    VL53L0X sensor_vl53l0x; 
+    public:
+    VL53L0X_Dev_t device;
     bool needInit;
-   public:
+ 
    /**
     * Constructor.
     */
@@ -27,7 +35,7 @@ namespace codal
    public:
 
     /**
-     * Configures the temperature for celsuiu range and sample rate defined
+     * Configures the distance for millimeter range and sample rate defined
      * in this object. The nearest values are chosen to those defined
      * that are supported by the hardware. The instance variables are then
      * updated to reflect reality.

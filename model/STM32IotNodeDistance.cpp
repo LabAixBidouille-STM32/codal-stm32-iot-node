@@ -18,10 +18,23 @@ using namespace codal;
   */
 STM32IotNodeDistance::STM32IotNodeDistance()
 : Sensor(DEVICE_ID_DISTANCE),
-  sensor_vl53l0x(default_i2c_sensors_bus, nullptr, nullptr),
+  device(),
   needInit(true)
 {
+  memset(&device, 0, sizeof(device));
+  device.I2cHandle = default_i2c_sensors_bus->getHandle();
+  device.I2cDevAddr = PROXIMITY_I2C_ADDRESS;
 
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  /*Configure GPIO pin : VL53L0X_XSHUT_Pin */
+  GPIO_InitStruct.Pin = VL53L0X_XSHUT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(VL53L0X_XSHUT_GPIO_Port, &GPIO_InitStruct);
+
+  HAL_GPIO_WritePin(VL53L0X_XSHUT_GPIO_Port, VL53L0X_XSHUT_Pin, GPIO_PIN_SET);
 }
 
 /**
@@ -36,18 +49,47 @@ STM32IotNodeDistance::STM32IotNodeDistance()
 
 int STM32IotNodeDistance::configure()
 {
-   // Switch off VL53L0X component.
-  sensor_vl53l0x.VL53L0X_Off();
-
-  // Initialize VL53L0X top component.
-  status = sensor_vl53l0x.InitSensor(0x10);
-  if(status)
-  {
-    printf("Init sensor_vl53l0x failed...");
-    return DEVICE_I2C_ERROR;
+  printf("STM32IotNodeDistance::configure()\n");
+  target_wait(1000);
+  /* Initialize IO interface */
+  SENSOR_IO_Init(); 
+  
+  uint16_t vl53l0x_id = 0; 
+  VL53L0X_DeviceInfo_t VL53L0X_DeviceInfo; 
+  
+  memset(&VL53L0X_DeviceInfo, 0, sizeof(VL53L0X_DeviceInfo_t));
+  
+  if (VL53L0X_ERROR_NONE == VL53L0X_GetDeviceInfo(&device, &VL53L0X_DeviceInfo))
+  {  
+    if (VL53L0X_ERROR_NONE == VL53L0X_RdWord(&device, VL53L0X_REG_IDENTIFICATION_MODEL_ID, (uint16_t *) &vl53l0x_id))
+    {
+      if (vl53l0x_id == VL53L0X_ID)
+      {
+        if (VL53L0X_ERROR_NONE == VL53L0X_DataInit(&device))
+        {
+          device.Present = 1;
+          SetupSingleShot(device);
+        }
+        else
+        { 
+          printf("VL53L0X Time of Flight Failed to send its ID!\n");
+          return DEVICE_I2C_ERROR;
+        }
+      }
+    }
+    else
+    {
+      printf("VL53L0X Time of Flight Failed to Initialize!\n");
+      return DEVICE_I2C_ERROR;
+    }
   }
-  printf("Init sensor_vl53l0x ok...");
+  else
+  {
+    printf("VL53L0X Time of Flight Failed to get infos!\n");
+    return DEVICE_I2C_ERROR;
+  }  
 
+  printf("Init sensor_vl53l0x ok...\n");
   return DEVICE_OK;
 }
 
@@ -60,9 +102,6 @@ int STM32IotNodeDistance::init()
 {
     if(!needInit)
       return DEVICE_OK;
-
-    sensor_vl53l0x.setGpio0(&default_device_instance->io.pc6);
-    sensor_vl53l0x.setGpio1Int(&default_device_instance->io.pc7);
     
     needInit = false;
     return configure();
@@ -79,17 +118,16 @@ int STM32IotNodeDistance::init()
 
 int STM32IotNodeDistance::readValue()
 {
-  init();
-  // Read Range.
-  uint32_t distance;
-  int status = sensor_vl53l0x.GetDistance(&distance);
+  if(needInit)
+    return 0;
 
-  printf("| Distance [mm]: %ld |  \n", distance);
-  
-  if (status != VL53L0X_ERROR_NONE){
-    printf("VL53L0X_ERROR : %d\n", status );
-    return DEVICE_I2C_ERROR;
-  }
-  
+  uint16_t distance;
+  VL53L0X_RangingMeasurementData_t RangingMeasurementData;
+  VL53L0X_PerformSingleRangingMeasurement(&device, &RangingMeasurementData);
+
+  distance = RangingMeasurementData.RangeMilliMeter;
+
+  printf("| distance [mm]: %d |  \n", distance);
   return distance;
+  return 0;
 }

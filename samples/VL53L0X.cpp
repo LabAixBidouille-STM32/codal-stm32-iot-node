@@ -3,13 +3,12 @@
 #include "VL53L0X.h"
 #include "i2c.h"
 #include "stm32l4xxI2C.h"
-#include "vl53l0x_class.h"
 
 using namespace codal;
 
 void onSampleEvent(Event e){
-        //uint32_t distance = default_device_instance->distance.getValue();
-        //printf("DISTANCE = %ld mm\n", distance);
+        uint32_t distance = default_device_instance->distance.getValue();
+        printf("DISTANCE = %ld mm\n", distance);
 }
 
 void VL53L0X_main(codal::STM32IotNode& iotNode){
@@ -19,6 +18,15 @@ void VL53L0X_main(codal::STM32IotNode& iotNode){
     printf("*******************************************\n");
     iotNode.sleep(1000);
 
+    default_device_instance->distance.configure();
+    uint32_t distance;
+    VL53L0X_RangingMeasurementData_t RangingMeasurementData;
+    VL53L0X_PerformSingleRangingMeasurement(&default_device_instance->distance.device, &RangingMeasurementData);
+
+    distance = RangingMeasurementData.RangeMilliMeter;
+    printf("| Distance [mm]: %ld |  \n", distance);
+    //default_device_instance->distance.needInit = false;
+    iotNode.sleep(1000);
     EventModel::defaultEventBus->listen(DEVICE_ID_DISTANCE, SENSOR_UPDATE_NEEDED, onSampleEvent);
 
     while(1) {

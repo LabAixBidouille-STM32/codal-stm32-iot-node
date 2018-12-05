@@ -55,7 +55,7 @@ namespace codal
 
             CoordinateSpace coordinateSpace;
 
-            //STM32IotNodeDistance distance;
+            STM32IotNodeDistance distance;
             STM32IotNodeTemperature temperature;
             STM32IotNodeHumidity humidity;
             STM32IotNodePressure pressure;
