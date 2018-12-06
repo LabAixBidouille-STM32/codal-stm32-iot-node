@@ -43,6 +43,9 @@
 #elif defined(SERIAL_SAMPLE)
     #include "SerialSample.h"
     #define SAMPLE_MAIN Serial_main
+#elif defined(LCD_SAMPLE)
+    #include "LCDSample.h"
+    #define SAMPLE_MAIN Serial_main
 #else
     #include "Blink.h"
     #define SAMPLE_MAIN Blink_main

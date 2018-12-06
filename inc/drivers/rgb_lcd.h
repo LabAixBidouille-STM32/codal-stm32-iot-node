@@ -2,12 +2,17 @@
 #define __RGB_LCD_H__
 
 #include <inttypes.h>
-#include "I2C.h"
+#include "stm32l4xxI2C.h"
 
 // Device I2C Arress
-#define LCD_ADDRESS     (0x7c>>1)
-#define RGB_ADDRESS     (0xc4>>1)
+#define LCD_ADDRESS     (0x7c)
+#define RGB_ADDRESS     (0xc4)
 
+// base define
+#define DEC 10
+#define HEX 16
+#define OCT 8
+#define BIN 2
 
 // color define 
 #define WHITE           0
@@ -64,12 +69,22 @@
 namespace codal {
 class rgb_lcd 
 {
-  I2C& i2c;
+private:
+  STM32L4xxI2C& i2c;
   uint8_t cols;
   uint8_t lines; 
   uint8_t dotsize;
+  int write_error;
+
+  size_t printNumber(unsigned long, uint8_t);
+  void printLLNumber(uint64_t, uint8_t );
+  size_t printFloat(double, uint8_t);
+
+protected:
+  void setWriteError(int err = 1) { write_error = err; }
+  
 public:
-  rgb_lcd(I2C& i2c, uint8_t cols, uint8_t lines, uint8_t dotsize = LCD_5x8DOTS);
+  rgb_lcd(STM32L4xxI2C& i2c, uint8_t cols, uint8_t lines, uint8_t dotsize = LCD_5x8DOTS);
 
   void init();
 
@@ -93,11 +108,12 @@ public:
   void setCursor(uint8_t, uint8_t); 
   
   virtual size_t write(uint8_t);
+  
   void command(uint8_t);
   
   // color control
   void setRGB(unsigned char r, unsigned char g, unsigned char b);               // set rgb
-  void setPWM(unsigned char color, unsigned char pwm){setReg(color, pwm);}      // set pwm
+  void setPWM(unsigned char color, unsigned char pwm){writeRGBRegister(color, pwm);}      // set pwm
   
   void setColor(unsigned char color);
   void setColorAll(){setRGB(0, 0, 0);}
@@ -106,10 +122,47 @@ public:
   // blink the LED backlight
   void blinkLED(void);
   void noBlinkLED(void);
-  
+
+  int getWriteError() { 
+    return write_error; 
+  }
+
+  void clearWriteError() { 
+    setWriteError(0); 
+  }
+
+  size_t write(const char *str) {
+      if (str == NULL) return 0;
+      return write((const uint8_t *)str, strlen(str));
+  }
+
+  virtual size_t write(const uint8_t *buffer, size_t size);
+    size_t write(const char *buffer, size_t size) {
+      return write((const uint8_t *)buffer, size);
+  }
+
+  size_t print(const char[]);
+  size_t print(char);
+  size_t print(unsigned char, int = DEC);
+  size_t print(int, int = DEC);
+  size_t print(unsigned int, int = DEC);
+  size_t print(long, int = DEC);
+  size_t print(unsigned long, int = DEC);
+  size_t print(double, int = 2);
+
+  size_t println(const char[]);
+  size_t println(char);
+  size_t println(unsigned char, int = DEC);
+  size_t println(int, int = DEC);
+  size_t println(unsigned int, int = DEC);
+  size_t println(long, int = DEC);
+  size_t println(unsigned long, int = DEC);
+  size_t println(double, int = 2);
+  size_t println(void);
+
 private:
   void send(uint8_t, uint8_t);
-  void setReg(unsigned char addr, unsigned char dta);
+  void writeRGBRegister(unsigned char addr, unsigned char dta);
 
   uint8_t _displayfunction;
   uint8_t _displaycontrol;
@@ -117,11 +170,8 @@ private:
 
   uint8_t _initialized;
 
-  uint8_t _numlines,_currline;
-
-  void i2c_send_byte(unsigned char dta);
-  void i2c_send_byteS(unsigned char *dta, unsigned char len);
-
+  uint8_t _numlines;
+  uint8_t _currline;
 };
 }
 #endif

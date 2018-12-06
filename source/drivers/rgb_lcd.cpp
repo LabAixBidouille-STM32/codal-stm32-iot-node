@@ -10,17 +10,7 @@ using namespace codal;
 
 #define delayMicroseconds target_wait_us
 
-void rgb_lcd::i2c_send_byte(unsigned char dta)
-{
-    i2c.write(LCD_ADDRESS, dta);
-}
-
-void rgb_lcd::i2c_send_byteS(unsigned char *dta, unsigned char len)
-{
-    i2c.write(LCD_ADDRESS, dta, len);
-}
-
-rgb_lcd::rgb_lcd(I2C& i2c, uint8_t cols, uint8_t lines, uint8_t dotsize)
+rgb_lcd::rgb_lcd(STM32L4xxI2C& i2c, uint8_t cols, uint8_t lines, uint8_t dotsize)
     :i2c(i2c), cols(cols), lines(lines), dotsize(dotsize)
 {
 }
@@ -76,12 +66,12 @@ void rgb_lcd::init()
     
     
     // backlight init
-    setReg(REG_MODE1, 0);
+    writeRGBRegister(REG_MODE1, 0x00);
     // set LEDs controllable by both PWM and GRPPWM registers
-    setReg(REG_OUTPUT, 0xFF);
+    writeRGBRegister(REG_OUTPUT, 0xAA);
     // set MODE2 values
     // 0010 0000 -> 0x20  (DMBLNK to 1, ie blinky mode)
-    setReg(REG_MODE2, 0x20);
+    writeRGBRegister(REG_MODE2, 0x00);
     
     setColorWhite();
 
@@ -102,12 +92,8 @@ void rgb_lcd::home()
 
 void rgb_lcd::setCursor(uint8_t col, uint8_t row)
 {
-
     col = (row == 0 ? col|0x80 : col|0xc0);
-    unsigned char dta[2] = {0x80, col};
-
-    i2c_send_byteS(dta, 2);
-
+    I2Cx_Write(i2c.getHandle(), LCD_ADDRESS, 0x80, I2C_MEMADD_SIZE_8BIT, col);
 }
 
 // Turn the display on/off (quickly)
@@ -188,18 +174,17 @@ void rgb_lcd::noAutoscroll(void)
 // with custom characters
 void rgb_lcd::createChar(uint8_t location, uint8_t charmap[])
 {
-
     location &= 0x7; // we only have 8 locations 0-7
     command(LCD_SETCGRAMADDR | (location << 3));
     
-    
-    unsigned char dta[9];
-    dta[0] = 0x40;
+    unsigned char dta[8];
+
     for(int i=0; i<8; i++)
     {
-        dta[i+1] = charmap[i];
+        dta[i] = charmap[i];
     }
-    i2c_send_byteS(dta, 9);
+
+    I2Cx_WriteMultiple(i2c.getHandle(), LCD_ADDRESS, 0x40, I2C_MEMADD_SIZE_8BIT, dta, 8);
 }
 
 // Control the backlight LED blinking
@@ -207,14 +192,14 @@ void rgb_lcd::blinkLED(void)
 {
     // blink period in seconds = (<reg 7> + 1) / 24
     // on/off ratio = <reg 6> / 256
-    setReg(0x07, 0x17);  // blink every second
-    setReg(0x06, 0x7f);  // half on, half off
+    writeRGBRegister(0x07, 0x17);  // blink every second
+    writeRGBRegister(0x06, 0x7f);  // half on, half off
 }
 
 void rgb_lcd::noBlinkLED(void)
 {
-    setReg(0x07, 0x00);
-    setReg(0x06, 0xff);
+    writeRGBRegister(0x07, 0x00);
+    writeRGBRegister(0x06, 0xff);
 }
 
 /*********** mid level commands, for sending data/cmds */
@@ -222,29 +207,36 @@ void rgb_lcd::noBlinkLED(void)
 // send command
 inline void rgb_lcd::command(uint8_t value)
 {
-    unsigned char dta[2] = {0x80, value};
-    i2c_send_byteS(dta, 2);
+    I2Cx_Write(i2c.getHandle(),LCD_ADDRESS, 0x80, I2C_MEMADD_SIZE_8BIT, value);
 }
 
 // send data
 inline size_t rgb_lcd::write(uint8_t value)
 {
-
-    unsigned char dta[2] = {0x40, value};
-    i2c_send_byteS(dta, 2);
+    I2Cx_Write(i2c.getHandle(),LCD_ADDRESS, 0x40, I2C_MEMADD_SIZE_8BIT, value);
     return 1; // assume sucess
 }
 
-void rgb_lcd::setReg(unsigned char addr, unsigned char dta)
+size_t rgb_lcd::write(const uint8_t *buffer, size_t size)
 {
-    i2c.writeRegister(RGB_ADDRESS, addr, dta);
+  size_t n = 0;
+  while (size--) {
+    if (write(*buffer++)) n++;
+    else break;
+  }
+  return n;
+}
+
+void rgb_lcd::writeRGBRegister(unsigned char addr, unsigned char dta)
+{
+    I2Cx_Write(i2c.getHandle(),RGB_ADDRESS, addr, I2C_MEMADD_SIZE_8BIT, dta);
 }
 
 void rgb_lcd::setRGB(unsigned char r, unsigned char g, unsigned char b)
 {
-    setReg(REG_RED, r);
-    setReg(REG_GREEN, g);
-    setReg(REG_BLUE, b);
+    writeRGBRegister(REG_RED, r);
+    writeRGBRegister(REG_GREEN, g);
+    writeRGBRegister(REG_BLUE, b);
 }
 
 const unsigned char color_define[4][3] = 
@@ -259,4 +251,183 @@ void rgb_lcd::setColor(unsigned char color)
 {
     if(color > 3)return ;
     setRGB(color_define[color][0], color_define[color][1], color_define[color][2]);
+}
+
+size_t rgb_lcd::print(const char str[])
+{
+  return write(str);
+}
+
+size_t rgb_lcd::print(char c)
+{
+  return write(c);
+}
+
+size_t rgb_lcd::print(unsigned char b, int base)
+{
+  return print((unsigned long) b, base);
+}
+
+size_t rgb_lcd::print(int n, int base)
+{
+  return print((long) n, base);
+}
+
+size_t rgb_lcd::print(unsigned int n, int base)
+{
+  return print((unsigned long) n, base);
+}
+
+size_t rgb_lcd::print(long n, int base)
+{
+  if (base == 0) {
+    return write(n);
+  } else if (base == 10) {
+    if (n < 0) {
+      int t = print('-');
+      n = -n;
+      return printNumber(n, 10) + t;
+    }
+    return printNumber(n, 10);
+  } else {
+    return printNumber(n, base);
+  }
+}
+
+size_t rgb_lcd::print(unsigned long n, int base)
+{
+  if (base == 0) return write(n);
+  else return printNumber(n, base);
+}
+
+size_t rgb_lcd::print(double n, int digits)
+{
+  return printFloat(n, digits);
+}
+
+size_t rgb_lcd::println(void)
+{
+  return write("\r\n");
+}
+
+size_t rgb_lcd::println(const char c[])
+{
+  size_t n = print(c);
+  n += println();
+  return n;
+}
+
+size_t rgb_lcd::println(char c)
+{
+  size_t n = print(c);
+  n += println();
+  return n;
+}
+
+size_t rgb_lcd::println(unsigned char b, int base)
+{
+  size_t n = print(b, base);
+  n += println();
+  return n;
+}
+
+size_t rgb_lcd::println(int num, int base)
+{
+  size_t n = print(num, base);
+  n += println();
+  return n;
+}
+
+size_t rgb_lcd::println(unsigned int num, int base)
+{
+  size_t n = print(num, base);
+  n += println();
+  return n;
+}
+
+size_t rgb_lcd::println(long num, int base)
+{
+  size_t n = print(num, base);
+  n += println();
+  return n;
+}
+
+size_t rgb_lcd::println(unsigned long num, int base)
+{
+  size_t n = print(num, base);
+  n += println();
+  return n;
+}
+
+size_t rgb_lcd::println(double num, int digits)
+{
+  size_t n = print(num, digits);
+  n += println();
+  return n;
+}
+
+// Private Methods /////////////////////////////////////////////////////////////
+
+size_t rgb_lcd::printNumber(unsigned long n, uint8_t base) {
+  char buf[8 * sizeof(long) + 1]; // Assumes 8-bit chars plus zero byte.
+  char *str = &buf[sizeof(buf) - 1];
+
+  *str = '\0';
+
+  // prevent crash if called with base == 1
+  if (base < 2) base = 10;
+
+  do {
+    unsigned long m = n;
+    n /= base;
+    char c = m - base * n;
+    *--str = c < 10 ? c + '0' : c + 'A' - 10;
+  } while(n);
+
+  return write(str);
+}
+
+size_t rgb_lcd::printFloat(double number, uint8_t digits) 
+{ 
+  size_t n = 0;
+  
+  if (isnan(number)) return print("nan");
+  if (isinf(number)) return print("inf");
+  if (number > 4294967040.0) return print ("ovf");  // constant determined empirically
+  if (number <-4294967040.0) return print ("ovf");  // constant determined empirically
+  
+  // Handle negative numbers
+  if (number < 0.0)
+  {
+     n += print('-');
+     number = -number;
+  }
+
+  // Round correctly so that print(1.999, 2) prints as "2.00"
+  double rounding = 0.5;
+  for (uint8_t i=0; i<digits; ++i)
+    rounding /= 10.0;
+  
+  number += rounding;
+
+  // Extract the integer part of the number and print it
+  unsigned long int_part = (unsigned long) number;
+  double remainder = number - (double)int_part;
+  n += print(int_part);
+
+  // Print the decimal point, but only if there are digits beyond
+  if (digits > 0) {
+    n += print("."); 
+  }
+
+  // Extract digits from the remainder one at a time
+  while (digits-- > 0)
+  {
+    remainder *= 10.0;
+    int toPrint = int(remainder);
+    n += print(toPrint);
+    remainder -= toPrint; 
+  } 
+  
+  return n;
 }

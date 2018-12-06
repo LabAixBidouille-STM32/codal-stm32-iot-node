@@ -62,7 +62,6 @@ int STM32IotNode::init()
     timer.init();
     serial.init();
     i2c2.init();
-    //i2c1.init();
 
     //codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);    
     // Bring up fiber scheduler.
@@ -74,6 +73,7 @@ int STM32IotNode::init()
             CodalComponent::components[i]->init();
         }
     }
+    i2c1.init();
 
     status |= DEVICE_COMPONENT_STATUS_IDLE_TICK;
 
