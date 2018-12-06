@@ -217,16 +217,6 @@ inline size_t rgb_lcd::write(uint8_t value)
     return 1; // assume sucess
 }
 
-size_t rgb_lcd::write(const uint8_t *buffer, size_t size)
-{
-  size_t n = 0;
-  while (size--) {
-    if (write(*buffer++)) n++;
-    else break;
-  }
-  return n;
-}
-
 void rgb_lcd::writeRGBRegister(unsigned char addr, unsigned char dta)
 {
     I2Cx_Write(i2c.getHandle(),RGB_ADDRESS, addr, I2C_MEMADD_SIZE_8BIT, dta);

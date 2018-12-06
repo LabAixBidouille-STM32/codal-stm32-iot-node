@@ -15,13 +15,19 @@ void LCD_main(codal::STM32IotNode& iotNode){
     printf("*******************************************\n");
     printf("*     Demonstration du LCD GROVE RGB      *\n");
     printf("*******************************************\n");
-
+    iotNode.sleep(1000);
     // set up the LCD's number of columns and rows:
-    //iotNode.i2c1.init();
     rgb_lcd lcd(iotNode.i2c1, 16, 2);
     lcd.init();
-    lcd.print("Hello world !");
 
+    for(uint8_t i = 0; i < 4; i++){
+        lcd.setColor(i);
+        iotNode.sleep(1000);
+    }
+
+    lcd.setColorWhite();
+    lcd.print("Hello world !");
+    iotNode.sleep(1000);
     bool state = false;
     while(1) {
         iotNode.io.led.setDigitalValue(state);

@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include "stm32l4xxI2C.h"
 
-// Device I2C Arress
+// Device I2C Adress
 #define LCD_ADDRESS     (0x7c)
 #define RGB_ADDRESS     (0xc4)
 
@@ -107,8 +107,6 @@ public:
   void createChar(uint8_t, uint8_t[]);
   void setCursor(uint8_t, uint8_t); 
   
-  virtual size_t write(uint8_t);
-  
   void command(uint8_t);
   
   // color control
@@ -131,14 +129,23 @@ public:
     setWriteError(0); 
   }
 
-  size_t write(const char *str) {
-      if (str == NULL) return 0;
-      return write((const uint8_t *)str, strlen(str));
-  }
+  virtual size_t write(uint8_t);
 
-  virtual size_t write(const uint8_t *buffer, size_t size);
-    size_t write(const char *buffer, size_t size) {
-      return write((const uint8_t *)buffer, size);
+  virtual size_t write(const uint8_t *buffer, size_t size){
+    size_t n = 0;
+    while (size--) {
+      if (write(*buffer++)) n++;
+      else break;
+    }
+    return n;
+  }
+  
+  size_t write(const char *str) {
+    if (str == NULL) return 0;
+    return write((const uint8_t *)str, strlen(str));
+  }
+  size_t write(const char *buffer, size_t size) {
+    return write((const uint8_t *)buffer, size);
   }
 
   size_t print(const char[]);
