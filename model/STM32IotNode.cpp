@@ -62,11 +62,9 @@ int STM32IotNode::init()
     timer.init();
     serial.init();
     i2c2.init();
+    //i2c1.init();
 
-    //codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);
-
-    //distance.init();
-    
+    //codal_dmesg_set_flush_fn(STM32IotNode_dmesg_flush);    
     // Bring up fiber scheduler.
     scheduler_init(messageBus);
 
