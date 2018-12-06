@@ -19,6 +19,7 @@
 #define RED             1
 #define GREEN           2
 #define BLUE            3
+#define BLACK           4
 
 #define REG_RED         0x04        // pwm2
 #define REG_GREEN       0x03        // pwm1
@@ -110,12 +111,20 @@ public:
   void command(uint8_t);
   
   // color control
-  void setRGB(unsigned char r, unsigned char g, unsigned char b);               // set rgb
-  void setPWM(unsigned char color, unsigned char pwm){writeRGBRegister(color, pwm);}      // set pwm
+  void setRGB(unsigned char r, unsigned char g, unsigned char b); // set rgb
+  void setPWM(unsigned char color, unsigned char pwm){
+    writeRGBRegister(color, pwm);
+  } // set pwm
   
   void setColor(unsigned char color);
-  void setColorAll(){setRGB(0, 0, 0);}
-  void setColorWhite(){setRGB(255, 255, 255);}
+  
+  void setColorAll(){
+    setColor(BLACK);
+  }
+
+  void setColorWhite(){
+    setColor(WHITE);
+  }
 
   // blink the LED backlight
   void blinkLED(void);
@@ -156,16 +165,6 @@ public:
   size_t print(long, int = DEC);
   size_t print(unsigned long, int = DEC);
   size_t print(double, int = 2);
-
-  size_t println(const char[]);
-  size_t println(char);
-  size_t println(unsigned char, int = DEC);
-  size_t println(int, int = DEC);
-  size_t println(unsigned int, int = DEC);
-  size_t println(long, int = DEC);
-  size_t println(unsigned long, int = DEC);
-  size_t println(double, int = 2);
-  size_t println(void);
 
 private:
   void send(uint8_t, uint8_t);

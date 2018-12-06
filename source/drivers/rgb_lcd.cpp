@@ -17,9 +17,12 @@ rgb_lcd::rgb_lcd(STM32L4xxI2C& i2c, uint8_t cols, uint8_t lines, uint8_t dotsize
 
 void rgb_lcd::init() 
 {   
+    _displayfunction = 0;
+
     if (lines > 1) {
         _displayfunction |= LCD_2LINE;
     }
+
     _numlines = lines;
     _currline = 0;
 
@@ -31,7 +34,7 @@ void rgb_lcd::init()
     // SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
     // according to datasheet, we need at least 40ms after power rises above 2.7V
     // before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
-    delayMicroseconds(50000);
+    target_wait(100);
 
 
     // this is according to the hitachi HD44780 datasheet
@@ -39,11 +42,11 @@ void rgb_lcd::init()
 
     // Send function set command sequence
     command(LCD_FUNCTIONSET | _displayfunction);
-    delayMicroseconds(4500);  // wait more than 4.1ms
+    target_wait(5);
 
     // second try
     command(LCD_FUNCTIONSET | _displayfunction);
-    delayMicroseconds(150);
+    target_wait(5);
 
     // third go
     command(LCD_FUNCTIONSET | _displayfunction);
@@ -229,17 +232,18 @@ void rgb_lcd::setRGB(unsigned char r, unsigned char g, unsigned char b)
     writeRGBRegister(REG_BLUE, b);
 }
 
-const unsigned char color_define[4][3] = 
+const unsigned char color_define[][3] = 
 {
-    {255, 255, 255},            // white
-    {255, 0, 0},                // red
-    {0, 255, 0},                // green
-    {0, 0, 255},                // blue
+  {255, 255, 255}, // white
+  {255, 0, 0},     // red
+  {0, 255, 0},     // green
+  {0, 0, 255},     // blue
+  {0, 0, 0},       // black
 };
 
 void rgb_lcd::setColor(unsigned char color)
 {
-    if(color > 3)return ;
+    if(color > 4)return ;
     setRGB(color_define[color][0], color_define[color][1], color_define[color][2]);
 }
 
@@ -295,66 +299,6 @@ size_t rgb_lcd::print(double n, int digits)
   return printFloat(n, digits);
 }
 
-size_t rgb_lcd::println(void)
-{
-  return write("\r\n");
-}
-
-size_t rgb_lcd::println(const char c[])
-{
-  size_t n = print(c);
-  n += println();
-  return n;
-}
-
-size_t rgb_lcd::println(char c)
-{
-  size_t n = print(c);
-  n += println();
-  return n;
-}
-
-size_t rgb_lcd::println(unsigned char b, int base)
-{
-  size_t n = print(b, base);
-  n += println();
-  return n;
-}
-
-size_t rgb_lcd::println(int num, int base)
-{
-  size_t n = print(num, base);
-  n += println();
-  return n;
-}
-
-size_t rgb_lcd::println(unsigned int num, int base)
-{
-  size_t n = print(num, base);
-  n += println();
-  return n;
-}
-
-size_t rgb_lcd::println(long num, int base)
-{
-  size_t n = print(num, base);
-  n += println();
-  return n;
-}
-
-size_t rgb_lcd::println(unsigned long num, int base)
-{
-  size_t n = print(num, base);
-  n += println();
-  return n;
-}
-
-size_t rgb_lcd::println(double num, int digits)
-{
-  size_t n = print(num, digits);
-  n += println();
-  return n;
-}
 
 // Private Methods /////////////////////////////////////////////////////////////
 
