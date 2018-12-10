@@ -193,9 +193,9 @@ int STM32IotNodeAccelerometer::setPeriod(int period){
       {
         accelerometerDrv->GetXYZ(piData);
 
-        sample.x = piData[0] / 100;
-        sample.y = piData[1] / 100;
-        sample.z = piData[2] / 100;
+        sample.x = piData[0];
+        sample.y = piData[1];
+        sample.z = piData[2];
         previousSampleTime = system_timer_current_time();
         update(sample);
         return DEVICE_OK;
