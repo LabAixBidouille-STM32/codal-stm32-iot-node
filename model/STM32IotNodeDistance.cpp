@@ -21,7 +21,7 @@ STM32IotNodeDistance::STM32IotNodeDistance()
   device()
 {
   memset(&device, 0, sizeof(device));
-  device.I2cHandle = default_i2c_sensors_bus->getHandle();
+  device.I2cHandle = default_i2c_sensors_bus;
   device.I2cDevAddr = PROXIMITY_I2C_ADDRESS;
 
   GPIO_InitTypeDef GPIO_InitStruct;

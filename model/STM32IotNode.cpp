@@ -34,7 +34,7 @@ STM32IotNode::STM32IotNode()
     status = 0;
     default_device_instance = this;
     codal::default_serial_debug = &this->serial;
-    codal::default_i2c_sensors_bus = &this->i2c2;
+    codal::default_i2c_sensors_bus = this->i2c2.getHandle();
 }
 
 /**
