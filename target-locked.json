@@ -39,7 +39,7 @@
             "url": "https://github.com/LabAixBidouille-STM32/codal-core"
         },
         {
-            "branch": "8152db7358157510094ff725ecb02ac9d72e64cd",
+            "branch": "4a58c249f5c3da9bf6b06ba0fec384216bf49305",
             "name": "codal-stm32l475",
             "type": "git",
             "url": "https://github.com/nedseb/codal-stm32l475"
@@ -48,6 +48,6 @@
     "linker_flags": "-Wl,--no-wchar-size-warning -Wl,--gc-sections -static -Wl,--gc-sections -Wl,--defsym=malloc_getpagesize_P=0x80 -Wl,--start-group -lc -lm -Wl,--end-group -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16",
     "post_process": "",
     "processor": "STM32L4",
-    "snapshot_version": "v0.11.5",
+    "snapshot_version": "v0.11.6",
     "toolchain": "ARM_GCC"
 }
