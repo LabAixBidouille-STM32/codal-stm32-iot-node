@@ -4,20 +4,28 @@
 
 using namespace codal;
 
+void onSampleEvent(Event e){
+    int value = default_device_instance->io.A0.getAnalogValue();
+    printf("A0 = %x\n", value);
+}
+
+
 void GPIO_main(codal::STM32IotNode& iotNode){
     printf("\n");
     printf("*******************************************\n");
     printf("*           Demonstration de I/O          *\n");
     printf("*******************************************\n");
     iotNode.sleep(1000);
+    system_timer_event_every(1000, ID_PIN_P0, SENSOR_UPDATED);
+    EventModel::defaultEventBus->listen(ID_PIN_P0, SENSOR_UPDATED, onSampleEvent);
 
-    int state = 0;
     while(1) {
-        iotNode.io.D6.setDigitalValue(1);
-        iotNode.sleep(100);
-        iotNode.io.D6.setDigitalValue(0);
-        iotNode.sleep(100);
-        iotNode.io.D5.setAnalogValue(state);
-        state =(state + 10) % 1024; 
+        iotNode.io.led.setDigitalValue(1);
+        iotNode.io.A1.setDigitalValue(1);
+        iotNode.sleep(1000);
+
+        iotNode.io.led.setDigitalValue(0);
+        iotNode.io.A1.setDigitalValue(0);
+        iotNode.sleep(1000);
     }
 }
