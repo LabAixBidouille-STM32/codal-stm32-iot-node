@@ -69,6 +69,6 @@ namespace codal
   {
     if(!isInitialized)
       configure();
-    return (int) (tsensor_drv->ReadTemp(TSENSOR_I2C_ADDRESS) * 10.f);
+    return (int) (tsensor_drv->ReadTemp(TSENSOR_I2C_ADDRESS));
   }
 }
