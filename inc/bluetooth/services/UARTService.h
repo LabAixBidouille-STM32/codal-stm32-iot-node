@@ -1,299 +1,32 @@
-/*
-The MIT License (MIT)
+/* mbed Microcontroller Library
+ * Copyright (c) 2006-2013 ARM Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-Copyright (c) 2016 British Broadcasting Corporation.
-This software is provided by Lancaster University by arrangement with the BBC.
+#ifndef __BLE_UART_SERVICE_H__
+#define __BLE_UART_SERVICE_H__
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+#ifdef YOTTA_CFG_MBED_OS
+#include "mbed-drivers/mbed.h"
+#include "mbed-drivers/Stream.h"
+#else
+#include "mbed.h"
+#include "Stream.h"
+#endif
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-*/
-
-#ifndef CODAL_UART_SERVICE_H
-#define CODAL_UART_SERVICE_H
-
-#include "UUID.h"
-#include "BLE.h"
-#include "CodalConfig.h"
-#include "Serial.h"
-
-#define CODAL_UART_S_DEFAULT_BUF_SIZE    20
-
-#define CODAL_UART_S_EVT_DELIM_MATCH     1
-#define CODAL_UART_S_EVT_HEAD_MATCH      2
-#define CODAL_UART_S_EVT_RX_FULL         3
-
-/**
-  * Class definition for the custom  UART Service.
-  * Provides a BLE service that acts as a UART port, enabling the reception and transmission
-  * of an arbitrary number of bytes.
-  */
-class UARTService
-{
-    uint8_t* rxBuffer;
-
-    uint8_t* txBuffer;
-
-    uint8_t rxBufferHead;
-    uint8_t rxBufferTail;
-    uint8_t rxBufferSize;
-
-    uint8_t txBufferSize;
-
-    uint32_t rxCharacteristicHandle;
-
-    // Bluetooth stack we're running on.
-    BLEDevice           &ble;
-
-    //delimeters used for matching on receive.
-    ManagedString delimeters;
-
-    //a variable used when a user calls the eventAfter() method.
-    int rxBuffHeadMatch;
-
-    /**
-      * A callback function for whenever a Bluetooth device writes to our TX characteristic.
-      */
-    void onDataWritten(const GattWriteCallbackParams *params);
-
-    /**
-      * An internal method that copies values from a circular buffer to a linear buffer.
-      *
-      * @param circularBuff a pointer to the source circular buffer
-      * @param circularBuffSize the size of the circular buffer
-      * @param linearBuff a pointer to the destination linear buffer
-      * @param tailPosition the tail position in the circular buffer you want to copy from
-      * @param headPosition the head position in the circular buffer you want to copy to
-      *
-      * @note this method assumes that the linear buffer has the appropriate amount of
-      *       memory to contain the copy operation
-      */
-    void circularCopy(uint8_t *circularBuff, uint8_t circularBuffSize, uint8_t *linearBuff, uint16_t tailPosition, uint16_t headPosition);
-
-    public:
-
-    /**
-     * Constructor for the UARTService.
-     * @param _ble an instance of BLEDevice
-     * @param rxBufferSize the size of the rxBuffer
-     * @param txBufferSize the size of the txBuffer
-     *
-     * @note The default size is CODAL_UART_S_DEFAULT_BUF_SIZE (20 bytes).
-     */
-    UARTService(BLEDevice &_ble, uint8_t rxBufferSize = CODAL_UART_S_DEFAULT_BUF_SIZE, uint8_t txBufferSize = CODAL_UART_S_DEFAULT_BUF_SIZE);
-
-    /**
-      * Retreives a single character from our RxBuffer.
-      *
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will attempt to read a single character, and return immediately
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will configure the event and block the current fiber until the
-      *                         event is received.
-      *
-      * @return CODAL_INVALID_PARAMETER if the mode given is SYNC_SPINWAIT, a character or CODAL_NO_DATA
-      */
-    int getc(SerialMode mode = SYNC_SLEEP);
-
-    /**
-      * Places a single character into our transmission buffer,
-      *
-      * @param c the character to transmit
-      *
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will copy as many characters as it can into the buffer for transmission,
-      *                    and return control to the user.
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will perform a cooperative blocking wait until all
-      *                         given characters have been received by the connected
-      *                         device.
-      *
-      * @return the number of characters written, or CODAL_NOT_SUPPORTED if there is
-      *         no connected device, or the connected device has not enabled indications.
-      */
-    int putc(char c, SerialMode mode = SYNC_SLEEP);
-
-    /**
-      * Copies characters into the buffer used for Transmitting to the central device.
-      *
-      * @param buf a buffer containing length number of bytes.
-      * @param length the size of the buffer.
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will copy as many characters as it can into the buffer for transmission,
-      *                    and return control to the user.
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will perform a cooperative blocking wait until all
-      *                         given characters have been received by the connected
-      *                         device.
-      *
-      * @return the number of characters written, or CODAL_NOT_SUPPORTED if there is
-      *         no connected device, or the connected device has not enabled indications.
-      */
-    int send(const uint8_t *buf, int length, SerialMode mode = SYNC_SLEEP);
-
-    /**
-      * Copies characters into the buffer used for Transmitting to the central device.
-      *
-      * @param s the string to transmit
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will copy as many characters as it can into the buffer for transmission,
-      *                    and return control to the user.
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will perform a cooperative blocking wait until all
-      *                         given characters have been received by the connected
-      *                         device.
-      *
-      * @return the number of characters written, or CODAL_NOT_SUPPORTED if there is
-      *         no connected device, or the connected device has not enabled indications.
-      */
-    int send(ManagedString s, SerialMode mode = SYNC_SLEEP);
-
-    /**
-      * Reads a number of characters from the rxBuffer and fills user given buffer.
-      *
-      * @param buf a pointer to a buffer of len bytes.
-      * @param len the size of the user allocated buffer
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will attempt to read all available characters, and return immediately
-      *                    until the buffer limit is reached
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will first of all determine whether the given number of characters
-      *                         are available in our buffer, if not, it will set an event and sleep
-      *                         until the number of characters are avaialable.
-      *
-      * @return the number of characters digested
-      */
-    int read(uint8_t *buf, int len, SerialMode mode = SYNC_SLEEP);
-
-    /**
-      * Reads a number of characters from the rxBuffer and returns them as a ManagedString
-      *
-      * @param len the number of characters to read.
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will attempt to read all available characters, and return immediately
-      *                    until the buffer limit is reached
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will first of all determine whether the given number of characters
-      *                         are available in our buffer, if not, it will set an event and sleep
-      *                         until the number of characters are avaialable.
-      *
-      * @return an empty ManagedString on error, or a ManagedString containing characters
-      */
-    ManagedString read(int len, SerialMode mode = SYNC_SLEEP);
-
-    /**
-      * Reads characters until a character matches one of the given delimeters
-      *
-      * @param delimeters the number of characters to match against
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will attempt read the immediate buffer, and look for a match.
-      *                    If there isn't, an empty ManagedString will be returned.
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will first of all consider the characters in the immediate buffer,
-      *                         if a match is not found, it will block on an event, fired when a
-      *                         character is matched.
-      *
-      * @return an empty ManagedString on error, or a ManagedString containing characters
-      */
-    ManagedString readUntil(ManagedString delimeters, SerialMode mode = SYNC_SLEEP);
-
-    /**
-      * Configures an event to be fired on a match with one of the delimeters.
-      *
-      * @param delimeters the characters to match received characters against e.g. ManagedString("\r\n")
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will configure the event and return immediately.
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will configure the event and block the current fiber until the
-      *                         event is received.
-      *
-      * @return CODAL_INVALID_PARAMETER if the mode given is SYNC_SPINWAIT, otherwise CODAL_OK.
-      *
-      * @note delimeters are matched on a per byte basis.
-      */
-    int eventOn(ManagedString delimeters, SerialMode mode = ASYNC);
-
-    /**
-      * Configures an event to be fired after "len" characters.
-      *
-      * @param len the number of characters to wait before triggering the event
-      * @param mode the selected mode, one of: ASYNC, SYNC_SPINWAIT, SYNC_SLEEP. Each mode
-      *        gives a different behaviour:
-      *
-      *            ASYNC - Will configure the event and return immediately.
-      *
-      *            SYNC_SPINWAIT - will return CODAL_INVALID_PARAMETER
-      *
-      *            SYNC_SLEEP - Will configure the event and block the current fiber until the
-      *                         event is received.
-      *
-      * @return CODAL_INVALID_PARAMETER if the mode given is SYNC_SPINWAIT, otherwise CODAL_OK.
-      */
-    int eventAfter(int len, SerialMode mode = ASYNC);
-
-    /**
-      * Determines if we have space in our rxBuff.
-      *
-      * @return 1 if we have space, 0 if we do not.
-      */
-    int isReadable();
-
-    /**
-      * @return The currently buffered number of bytes in our rxBuff.
-      */
-    int rxBufferedSize();
-
-    /**
-      * @return The currently buffered number of bytes in our txBuff.
-      */
-    int txBufferedSize();
-};
+#include "ble/UUID.h"
+#include "ble/BLE.h"
 
 extern const uint8_t  UARTServiceBaseUUID[UUID::LENGTH_OF_LONG_UUID];
 extern const uint16_t UARTServiceShortUUID;
@@ -306,4 +39,168 @@ extern const uint8_t  UARTServiceUUID_reversed[UUID::LENGTH_OF_LONG_UUID];
 extern const uint8_t  UARTServiceTXCharacteristicUUID[UUID::LENGTH_OF_LONG_UUID];
 extern const uint8_t  UARTServiceRXCharacteristicUUID[UUID::LENGTH_OF_LONG_UUID];
 
-#endif
+/**
+* @class UARTService.
+* @brief BLE Service to enable UART over BLE.
+*/
+class UARTService {
+public:
+    /**< Maximum length of data (in bytes) that the UART service module can transmit to the peer. */
+    static const unsigned BLE_UART_SERVICE_MAX_DATA_LEN = (BLE_GATT_MTU_SIZE_DEFAULT - 3);
+
+public:
+
+    /**
+    * @param[ref] ble
+    *               BLE object for the underlying controller.
+    */
+    UARTService(BLE &_ble) :
+        ble(_ble),
+        receiveBuffer(),
+        sendBuffer(),
+        sendBufferIndex(0),
+        numBytesReceived(0),
+        receiveBufferIndex(0),
+        txCharacteristic(UARTServiceTXCharacteristicUUID, receiveBuffer, 1, BLE_UART_SERVICE_MAX_DATA_LEN,
+                         GattCharacteristic::BLE_GATT_CHAR_PROPERTIES_WRITE | GattCharacteristic::BLE_GATT_CHAR_PROPERTIES_WRITE_WITHOUT_RESPONSE),
+        rxCharacteristic(UARTServiceRXCharacteristicUUID, sendBuffer, 1, BLE_UART_SERVICE_MAX_DATA_LEN, GattCharacteristic::BLE_GATT_CHAR_PROPERTIES_NOTIFY) {
+        GattCharacteristic *charTable[] = {&txCharacteristic, &rxCharacteristic};
+        GattService         uartService(UARTServiceUUID, charTable, sizeof(charTable) / sizeof(GattCharacteristic *));
+
+        ble.addService(uartService);
+        ble.onDataWritten(this, &UARTService::onDataWritten);
+    }
+
+    /**
+     * Note: TX and RX characteristics are to be interpreted from the viewpoint of the GATT client using this service.
+     */
+    uint16_t getTXCharacteristicHandle() {
+        return txCharacteristic.getValueAttribute().getHandle();
+    }
+
+    /**
+     * Note: TX and RX characteristics are to be interpreted from the viewpoint of the GATT client using this service.
+     */
+    uint16_t getRXCharacteristicHandle() {
+        return rxCharacteristic.getValueAttribute().getHandle();
+    }
+
+    /**
+     * We attempt to collect bytes before pushing them to the UART RX
+     * characteristic; writing to the RX characteristic then generates
+     * notifications for the client. Updates made in quick succession to a
+     * notification-generating characteristic result in data being buffered
+     * in the Bluetooth stack as notifications are sent out. The stack has
+     * its limits for this buffering - typically a small number under 10.
+     * Collecting data into the sendBuffer buffer helps mitigate the rate of
+     * updates. But we shouldn't buffer a large amount of data before updating
+     * the characteristic, otherwise the client needs to turn around and make
+     * a long read request; this is because notifications include only the first
+     * 20 bytes of the updated data.
+     *
+     * @param  buffer The received update.
+     * @param  length Number of characters to be appended.
+     * @return        Number of characters appended to the rxCharacteristic.
+     */
+    size_t write(const void *_buffer, size_t length) {
+        size_t         origLength = length;
+        const uint8_t *buffer     = static_cast<const uint8_t *>(_buffer);
+
+        if (ble.getGapState().connected) {
+            unsigned bufferIndex = 0;
+            while (length) {
+                unsigned bytesRemainingInSendBuffer = BLE_UART_SERVICE_MAX_DATA_LEN - sendBufferIndex;
+                unsigned bytesToCopy                = (length < bytesRemainingInSendBuffer) ? length : bytesRemainingInSendBuffer;
+
+                /* Copy bytes into sendBuffer. */
+                memcpy(&sendBuffer[sendBufferIndex], &buffer[bufferIndex], bytesToCopy);
+                length          -= bytesToCopy;
+                sendBufferIndex += bytesToCopy;
+                bufferIndex     += bytesToCopy;
+
+                /* Have we collected enough? */
+                if ((sendBufferIndex == BLE_UART_SERVICE_MAX_DATA_LEN) ||
+                    // (sendBuffer[sendBufferIndex - 1] == '\r')          ||
+                    (sendBuffer[sendBufferIndex - 1] == '\n')) {
+                    ble.gattServer().write(getRXCharacteristicHandle(), static_cast<const uint8_t *>(sendBuffer), sendBufferIndex);
+                    sendBufferIndex = 0;
+                }
+            }
+        }
+
+        return origLength;
+    }
+
+    /**
+     * Helper function to write out strings.
+     * @param  str The received string.
+     * @return     Number of characters appended to the rxCharacteristic.
+     */
+    size_t writeString(const char *str) {
+        return write(str, strlen(str));
+    }
+
+    /**
+     * Override for Stream::_putc().
+     * @param  c
+     *         This function writes the character c, cast to an unsigned char, to stream.
+     * @return
+     *     The character written as an unsigned char cast to an int or EOF on error.
+     */
+    int _putc(int c) {
+        return (write(&c, 1) == 1) ? 1 : EOF;
+    }
+
+    /**
+     * Override for Stream::_getc().
+     * @return
+     *     The character read.
+     */
+    int _getc() {
+        if (receiveBufferIndex == numBytesReceived) {
+            return EOF;
+        }
+
+        return receiveBuffer[receiveBufferIndex++];
+    }
+
+protected:
+    /**
+     * This callback allows the UART service to receive updates to the
+     * txCharacteristic. The application should forward the call to this
+     * function from the global onDataWritten() callback handler; if that's
+     * not used, this method can be used as a callback directly.
+     */
+    void onDataWritten(const GattWriteCallbackParams *params) {
+        if (params->handle == getTXCharacteristicHandle()) {
+            uint16_t bytesRead = params->len;
+            if (bytesRead <= BLE_UART_SERVICE_MAX_DATA_LEN) {
+                numBytesReceived   = bytesRead;
+                receiveBufferIndex = 0;
+                memcpy(receiveBuffer, params->data, numBytesReceived);
+            }
+        }
+    }
+
+protected:
+    BLE                &ble;
+
+    uint8_t             receiveBuffer[BLE_UART_SERVICE_MAX_DATA_LEN]; /**< The local buffer into which we receive
+                                                                       *   inbound data before forwarding it to the
+                                                                       *   application. */
+
+    uint8_t             sendBuffer[BLE_UART_SERVICE_MAX_DATA_LEN];    /**< The local buffer into which outbound data is
+                                                                       *   accumulated before being pushed to the
+                                                                       *   rxCharacteristic. */
+    uint8_t             sendBufferIndex;
+    uint8_t             numBytesReceived;
+    uint8_t             receiveBufferIndex;
+
+    GattCharacteristic  txCharacteristic; /**< From the point of view of the external client, this is the characteristic
+                                           *   they'd write into in order to communicate with this application. */
+    GattCharacteristic  rxCharacteristic; /**< From the point of view of the external client, this is the characteristic
+                                           *   they'd read from in order to receive the bytes transmitted by this
+                                           *   application. */
+};
+
+#endif /* #ifndef __BLE_UART_SERVICE_H__*/
