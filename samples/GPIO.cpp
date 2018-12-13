@@ -5,9 +5,9 @@
 using namespace codal;
 
 void onSampleEvent(Event e){
-    int value = default_device_instance->io.A0.getAnalogValue();
-    default_device_instance->io.D6.setAnalogValue(value);
-    printf("A0 = %d\n", value);
+    int value = default_device_instance->io.A3.getAnalogValue();
+    default_device_instance->io.D5.setAnalogValue(value);
+    printf("A3 = %d\n", value);
 }
 
 
