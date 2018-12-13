@@ -37,11 +37,14 @@
  *  @{
  */
  
+#include "EventModel.h"
 #include "PinNumber.h"
 
 #include "BlueNRGDevice.h"
 #include "BlueNRGGap.h"
 #include "BlueNRGGattServer.h"
+
+#include "codal_target_hal.h"
 
 #include "btle.h"
 #include "ble_utils.h"
@@ -90,6 +93,12 @@ createBLEInstance(void)
     return (&bluenrgDeviceInstance);
 }
 
+ 
+ inline void onHCI_Isr(Event) 
+ { 
+    HCI_Isr();
+ }
+
 /**************************************************************************/
 /**
     @brief  Constructor
@@ -120,19 +129,23 @@ BlueNRGDevice::BlueNRGDevice(codal::STM32L4xxPin& mosi,
     // 1-edge phase, with an 8MHz clock rate
     spi_.setMode(0, 8);
     spi_.setFrequency(8000000);
+    spi_.init();
 
     // Deselect the BlueNRG chip by keeping its nCS signal high
     pinCs.setDigitalValue(1);
 
-    wait_us(500);
+    target_wait_us(500);
 
     // Prepare communication between the host and the BlueNRG SPI interface
     HCI_Init();
 
     // Set the interrupt handler for the device
-    //irq_.mode(PullDown); // set irq mode
-    //irq_.rise(&HCI_Isr);
+    pinIrq.setPull(PullMode::Down);
+    pinIrq.eventOn(DEVICE_PIN_EVENT_ON_EDGE);
+    EventModel::defaultEventBus->listen(pinIrq.id, DEVICE_PIN_EVT_PULSE_HI, onHCI_Isr, MESSAGE_BUS_LISTENER_IMMEDIATE);
 }
+
+
 
 /**************************************************************************/
 /**
@@ -468,17 +481,17 @@ int32_t BlueNRGDevice::spiWrite(uint8_t* data1,
 
 bool BlueNRGDevice::dataPresent()
 {
-    return false;
+    return pinIrq.getDigitalValue() == 1;
 }
 
 void BlueNRGDevice::disable_irq()
 {
-    //irq_.disable_irq();
+    target_disable_irq();
 }
 
 void BlueNRGDevice::enable_irq()
 {
-    //irq_.enable_irq();
+    target_enable_irq();
 }
 
 void BlueNRGDevice::processEvents() {

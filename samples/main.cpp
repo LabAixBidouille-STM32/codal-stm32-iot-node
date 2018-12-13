@@ -4,6 +4,9 @@
 #if defined(BLE_TEMPERATURE_ALARM_SAMPLE)
     #include "TemperatureAlarm.h"
     #define SAMPLE_MAIN TemperatureAlarm_main
+#elif defined(BLE_THERMOMETER_SAMPLE)
+    #include "BLE_Thermometer.h"
+    #define SAMPLE_MAIN BLE_Thermometer_main
 #elif defined(HTS221_TEMPERATURE_SAMPLE)
     #include "HTS221_TEMPERATURE.h"
     #define SAMPLE_MAIN HTS221_TEMPERATURE_main
@@ -31,6 +34,9 @@
 #elif defined(BUTTON_SAMPLE)
     #include "ButtonSample.h"
     #define SAMPLE_MAIN ButtonSample_main
+#elif defined(SPI_SAMPLE)
+    #include "SPI_SAMPLE.h"
+    #define SAMPLE_MAIN SPI_main
 #elif defined(GPIO_SAMPLE)
     #include "GPIO.h"
     #define SAMPLE_MAIN GPIO_main
