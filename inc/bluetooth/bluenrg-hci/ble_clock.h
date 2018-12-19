@@ -17,7 +17,7 @@
 #ifndef __BLE_CLOCK_H__
 #define __BLE_CLOCK_H__
 
-#include <ble_hal_types.h>
+#include <stdint.h>
 
 /**
  * Number of clocks in one seconds.

@@ -50,6 +50,7 @@ extern BlueNRGDevice bluenrgDeviceInstance;
 extern "C" {
 #endif
 
+#include "bluenrg_updater_aci.h"
 #include "stm32_bluenrg_ble.h"
 #include "ble_debug.h"
 

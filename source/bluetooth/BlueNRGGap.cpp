@@ -39,10 +39,13 @@
  */
 
 #include "CodalFiber.h"
+
 #include "BlueNRGDevice.h"
+#include "ble_hal.h"
 #include "ble_payload.h"
 #include "ble_utils.h"
 #include "ble_debug.h"
+#include "ble_clock.h"
 
 /*
  * Utility to process GAP specific events (e.g., Advertising timeout)

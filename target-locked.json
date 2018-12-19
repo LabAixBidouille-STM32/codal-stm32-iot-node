@@ -23,7 +23,11 @@
         "MESSAGE_BUS_LISTENER_MAX_QUEUE_DEPTH": 10,
         "PROCESSOR_WORD_TYPE": "uint32_t",
         "SCHEDULER_TICK_PERIOD_US": 1000,
-        "USE_ACCEL_LSB": 0
+        "USE_ACCEL_LSB": 0,
+        "BLUENRG_MS" : 1,
+        "USE_STM32L475E_IOT01" : 1,
+        "SET_L2CAP_CONN_UPD_REQ_COMMAND" : 1,
+        "DENABLE_SPI_FIX" : 1
     },
     "cpp_flags": "-std=c++11 -Wno-register -D__weak=\"__attribute__((weak))\" -D__packed=\"__attribute__((__packed__))\" -fwrapv -fno-rtti -fno-threadsafe-statics -fno-exceptions -fno-unwind-tables -Wl,--gc-sections -Wl,--sort-common -Wl,--sort-section=alignment -Wno-array-bounds -DUSE_HAL_DRIVER -DSTM32L475xx -g -fstack-usage -Wall",
     "cpu_opts": "-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16",

@@ -13,16 +13,16 @@
 * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 *******************************************************************************/
 
-#include "ble_hal_types.h"
 #include "ble_status.h"
 #include "ble_hal.h"
-#include "ble_osal.h"
-#include "ble_hci_const.h"
-#include "bluenrg_aci_const.h"
+#include "osal.h"
 #include "bluenrg_updater_aci.h"
+#include "bluenrg_aci_const.h"
+#include "bluenrg_private_hal_types.h"
+#include "hci_tl_io.h"
+#include "hci_const.h"
+#include "ble_hci.h"
 
-#define MIN(a,b)            ((a) < (b) )? (a) : (b)
-#define MAX(a,b)            ((a) > (b) )? (a) : (b)
 
 tBleStatus aci_updater_start(void)
 {

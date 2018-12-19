@@ -16,15 +16,19 @@
   * <h2><center>&copy; COPYRIGHT 2013 STMicroelectronics</center></h2>
   */ 
 
-#include "ble_hal_types.h"
-#include "ble_osal.h"
+#include "osal.h"
+#include "list.h"
 #include "ble_status.h"
-#include "ble_hal.h"
-#include "ble_hci_const.h"
+#include "tl_ble_io.h"
+#include "tl_ble_hci.h"
+#include "ble_hci.h"
 #include "ble_gp_timer.h"
 #include "ble_debug.h"
+#include "hci_const.h"
 
 #include "stm32_bluenrg_ble.h"
+
+#define DEFAULT_TIMEOUT (33000)
 
 #if BLE_CONFIG_DBG_ENABLE
 #undef PRINTF
@@ -33,9 +37,6 @@
 #define HCI_LOG_ON 0
 
 #define HCI_READ_PACKET_NUM_MAX 		 (0x40)
-
-#define MIN(a,b)            ((a) < (b) )? (a) : (b)
-#define MAX(a,b)            ((a) > (b) )? (a) : (b)
 
 tListNode hciReadPktPool;
 tListNode hciReadPktRxQueue;
@@ -233,189 +234,3 @@ void hci_send_cmd(uint16_t ogf, uint16_t ocf, uint8_t plen, void *param)
   
   hci_write(header, param, sizeof(header), plen);
 }
-
-static void move_list(tListNode * dest_list, tListNode * src_list)
-{
-  pListNode tmp_node;
-  
-  while(!list_is_empty(src_list)){
-    list_remove_tail(src_list, &tmp_node);
-    list_insert_head(dest_list, tmp_node);
-  }
-}
-
- /* It ensures that we have at least half of the free buffers in the pool. */
-static void free_event_list(void)
-{
-  tHciDataPacket * pckt;
-    
-  Disable_SPI_IRQ();
-  
-  while(list_get_size(&hciReadPktPool) < HCI_READ_PACKET_NUM_MAX/2){
-    list_remove_head(&hciReadPktRxQueue, (tListNode **)&pckt);    
-    list_insert_tail(&hciReadPktPool, (tListNode *)pckt);
-    /* Explicit call to HCI_HandleSPI(), since it cannot be triggered by ISR if IRQ is kept high by
-    BlueNRG */
-    HCI_HandleSPI();
-  }
-  
-  Enable_SPI_IRQ();
-}
-
-int hci_send_req(struct hci_request *r, BOOL async)
-{
-  uint8_t *ptr;
-  uint16_t opcode = htobs(cmd_opcode_pack(r->ogf, r->ocf));
-  hci_event_pckt *event_pckt;
-  hci_uart_pckt *hci_hdr;
-  int to = DEFAULT_TIMEOUT;
-  struct timer t;
-  tHciDataPacket * hciReadPacket = NULL;
-  tListNode hciTempQueue;
-  
-  list_init_head(&hciTempQueue);
-
-  free_event_list();
-  
-  hci_send_cmd(r->ogf, r->ocf, r->clen, r->cparam);
-
-  if(async){
-    return 0;
-  }
-  
-  /* Minimum timeout is 1. */
-  if(to == 0)
-    to = 1;
-  
-  Timer_Set(&t, to);
-  
-  while(1) {
-    evt_cmd_complete *cc;
-    evt_cmd_status *cs;
-    evt_le_meta_event *me;
-    int len;
-      
-    while(1){
-
-      Disable_SPI_IRQ();
-      HCI_HandleSPI();
-      Enable_SPI_IRQ();
-
-      if(Timer_Expired(&t)){
-        goto failed;
-      }
-      if(!HCI_Queue_Empty()){
-        break;
-      }
-    }
-    
-    /* Extract packet from HCI event queue. */
-    Disable_SPI_IRQ();
-    list_remove_head(&hciReadPktRxQueue, (tListNode **)&hciReadPacket);    
-    
-    hci_hdr = (void *)hciReadPacket->dataBuff;
-
-    if(hci_hdr->type == HCI_EVENT_PKT){
-
-    event_pckt = (void *) (hci_hdr->data);
-    
-    ptr = hciReadPacket->dataBuff + (1 + HCI_EVENT_HDR_SIZE);
-    len = hciReadPacket->data_len - (1 + HCI_EVENT_HDR_SIZE);
-    
-    switch (event_pckt->evt) {
-      
-    case EVT_CMD_STATUS:
-      cs = (void *) ptr;
-      
-      if (cs->opcode != opcode)
-        goto failed;
-      
-      if (r->event != EVT_CMD_STATUS) {
-        if (cs->status) {
-          goto failed;
-        }
-        break;
-      }
-      
-      r->rlen = MIN(len, r->rlen);
-      Osal_MemCpy(r->rparam, ptr, r->rlen);
-      goto done;
-      
-    case EVT_CMD_COMPLETE:
-      cc = (void *) ptr;
-      
-      if (cc->opcode != opcode)
-        goto failed;
-      
-      ptr += EVT_CMD_COMPLETE_SIZE;
-      len -= EVT_CMD_COMPLETE_SIZE;
-      
-      r->rlen = MIN(len, r->rlen);
-      Osal_MemCpy(r->rparam, ptr, r->rlen);
-      goto done;
-      
-    case EVT_LE_META_EVENT:
-      me = (void *) ptr;
-      
-      if (me->subevent != r->event)
-        break;
-      
-      len -= 1;
-      r->rlen = MIN(len, r->rlen);
-      Osal_MemCpy(r->rparam, me->data, r->rlen);
-      goto done;
-      
-    case EVT_HARDWARE_ERROR:            
-      goto failed;
-      
-    default:      
-      break;
-      }
-    }
-    
-    /* If there are no more packets to be processed, be sure there is at list one
-       packet in the pool to process the expected event.
-       If no free packets are available, discard the processed event and insert it
-       into the pool. */
-    if(list_is_empty(&hciReadPktPool) && list_is_empty(&hciReadPktRxQueue)){
-      list_insert_tail(&hciReadPktPool, (tListNode *)hciReadPacket);
-      hciReadPacket=NULL;
-    }
-    else {
-      /* Insert the packet in a different queue. These packets will be
-      inserted back in the main queue just before exiting from send_req(), so that
-      these events can be processed by the application.
-    */
-	    list_insert_tail(&hciTempQueue, (tListNode *)hciReadPacket);
-	    hciReadPacket = NULL;
-    }
-
-    HCI_HandleSPI();
-    
-    Enable_SPI_IRQ();
-    
-  }
-  
-failed: 
-  if(hciReadPacket != NULL) {
-	  list_insert_head(&hciReadPktPool, (tListNode *)hciReadPacket); 
-#ifdef POOL_CNT
-	  nr_hciReadPktPool++;
-#endif
-  }
-  move_list(&hciReadPktRxQueue, &hciTempQueue);  
-  Enable_SPI_IRQ();
-  return -1;
-  
-done:
-  // Insert the packet back into the pool.
-  list_insert_head(&hciReadPktPool, (tListNode *)hciReadPacket); 
-#ifdef POOL_CNT
-  nr_hciReadPktPool++;
-#endif
-  move_list(&hciReadPktRxQueue, &hciTempQueue);
-  
-  Enable_SPI_IRQ();
-  return 0;
-}
-

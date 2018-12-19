@@ -22,9 +22,9 @@
 extern "C" {
 #endif
 
-#include "ble_hal_types.h"
-#include "ble_link_layer.h"
-#include <ble_list.h>
+#include "link_layer.h"
+#include "bluenrg_private_hal_types.h"
+#include "list.h"
 
 #define HCI_READ_PACKET_SIZE                    128 //71
 
@@ -32,7 +32,7 @@ extern "C" {
  * Maximum payload of HCI commands that can be sent. Change this value if needed.
  * This value can be up to 255.
  */
-#define HCI_MAX_PAYLOAD_SIZE 128
+//#define HCI_MAX_PAYLOAD_SIZE 128
 
 /*** Data types ***/
 
@@ -43,16 +43,6 @@ typedef struct _tHciDataPacket
   uint8_t dataBuff[HCI_READ_PACKET_SIZE];
   uint8_t data_len;
 } tHciDataPacket;
-
-struct hci_request {
-  uint16_t ogf;
-  uint16_t ocf;
-  int      event;
-  void     *cparam;
-  int      clen;
-  void     *rparam;
-  int      rlen;
-};
 
 typedef enum
 {
@@ -111,8 +101,6 @@ void HCI_Wait_For_Response(void);
 #else
 void HCI_Isr(void);
 void HCI_HandleSPI(void);
-
-int hci_send_req(struct hci_request *r, BOOL async);
 #endif /* __DMA_LP__ */
 
 extern tListNode hciReadPktPool;

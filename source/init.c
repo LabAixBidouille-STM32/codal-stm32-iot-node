@@ -1,7 +1,10 @@
 #include "stm32.h"
 #include "stm32l4xx_it.h"
+#include "stm32l4xx_it_ble.h"
 #include "codal_target_hal.h"
 #include "CodalDmesg.h"
+#include "common.h"
+#include "hw.h"
 
 
 void HAL_MspInit(void)
@@ -141,5 +144,48 @@ void _Error_Handler(const char *file, int line)
   {
   }
   /* USER CODE END Error_Handler_Debug */
+}
+
+
+
+/**
+ * @brief  This function handles RTC Auto wake-up interrupt request.
+ * @param  None
+ * @retval None
+ */
+void RTC_WKUP_IRQHandler(void)
+{
+  HW_TS_RTC_Wakeup_Handler();
+}
+
+/**
+ * @brief  This function handles External line
+ *         interrupt request for BlueNRG.
+ * @param  None
+ * @retval None
+ */
+void EXTI9_5_IRQHandler(void)           /* BNRG_SPI_EXTI_IRQHandler */
+{
+  HAL_GPIO_EXTI_IRQHandler(BNRG_SPI_EXTI_PIN);
+}
+
+/**
+ * @brief  This function handles DMA Rx interrupt request.
+ * @param  None
+ * @retval None
+ */
+void DMA2_Channel1_IRQHandler(void)     /* BNRG_SPI_RX_DMA_IRQHandler */
+{
+  HW_BNRG_DMARxCb();
+}
+
+/**
+ * @brief  This function handles DMA Tx interrupt request.
+ * @param  None
+ * @retval None
+ */
+void DMA2_Channel2_IRQHandler(void)    /* BNRG_SPI_TX_DMA_IRQHandler */
+{
+  HW_BNRG_DMATxCb();
 }
 

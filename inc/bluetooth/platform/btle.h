@@ -26,12 +26,11 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 
-#include "ble_hci.h"
-#include "ble_hci_le.h"
-#include "bluenrg_aci.h"
-#include "ble_hci_const.h"
+#include "tl_ble_hci.h"
+#include "hci_le.h"
+#include "ble_lib.h"
+#include "hci_const.h"
 #include "bluenrg_hal_aci.h"
-#include "stm32_bluenrg_ble.h"
 #include "bluenrg_gap.h"
 #include "bluenrg_gatt_server.h"
 

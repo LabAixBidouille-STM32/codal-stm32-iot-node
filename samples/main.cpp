@@ -1,9 +1,13 @@
 #include "stm32.h"
 #include "STM32IotNode.h"
 
+
 #if defined(BLE_TEMPERATURE_ALARM_SAMPLE)
     #include "TemperatureAlarm.h"
     #define SAMPLE_MAIN TemperatureAlarm_main
+#elif defined(BLE_HEARTRATE_SAMPLE)
+    #include "HeartRate.h"
+    #define SAMPLE_MAIN HeartRate_main
 #elif defined(BLE_THERMOMETER_SAMPLE)
     #include "BLE_Thermometer.h"
     #define SAMPLE_MAIN BLE_Thermometer_main

@@ -40,22 +40,26 @@
 #include "EventModel.h"
 #include "PinNumber.h"
 
-#include "BlueNRGDevice.h"
+#include "Gap.h"
 #include "BlueNRGGap.h"
+
+#include "BlueNRGDevice.h"
 #include "BlueNRGGattServer.h"
 
 #include "codal_target_hal.h"
 
 #include "btle.h"
 #include "ble_utils.h"
-#include "ble_osal.h"
+#include "osal.h"
 
-#include "ble_debug.h"
+#include "bluenrg_debug.h"
+
 #include "stm32_bluenrg_ble.h"
 
 extern "C" {
-    #include "ble_hci.h"
+    #include "tl_ble_hci.h"
     #include "bluenrg_utils.h"
+    #include "ble_hci.h"
 }
 
 using namespace codal;

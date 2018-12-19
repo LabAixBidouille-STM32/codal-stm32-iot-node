@@ -43,6 +43,8 @@
 #include "ble_utils.h"
 
 #include "bluenrg_targets.h"
+#include "bluenrg_gap.h"
+#include "bluenrg_gap_aci.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,17 +54,19 @@ extern "C" {
 /* C File Includes ------------------------------------------------------------------*/
 #include <stdio.h>
 #include <string.h>
+#include "tl_ble_hci.h"
 #include "ble_hci.h"
-#include "ble_hci_const.h"
-#include "bluenrg_aci.h"
+#include "hci_const.h"
+#include "ble_lib.h"
 #include "bluenrg_hal_aci.h"
 #include "bluenrg_gap.h"
 #include "bluenrg_utils.h"
+#include "stm32_bluenrg_ble.h"
 
-#include "ble_hal_types.h"
+#include "bluenrg_private_hal_types.h"
 #include "ble_hal.h"
 #include "ble_gp_timer.h"
-#include "ble_osal.h"
+#include "osal.h"
 #include "ble_sm.h"
 #include "ble_debug.h"
 
@@ -76,7 +80,7 @@ extern "C" {
 /* See file 'bluenrg_targets.h' for details regarding the BLUENRG_STACK_MODE */
 #define STACK_MODE BLUENRG_STACK_MODE
 
-void HCI_Input(tHciDataPacket * hciReadPacket);
+void HCI_Input(tHciDataPacket* hciReadPacket);
 
 uint16_t g_gap_service_handle = 0;
 uint16_t g_appearance_char_handle = 0;
@@ -136,17 +140,17 @@ void btleInit(void)
     if(ret != BLE_STATUS_SUCCESS){
         PRINTF("GATT_Init failed.\n");
     }
-    if (bnrg_expansion_board == IDB05A1) {
-        ret = aci_gap_init_IDB05A1(GAP_PERIPHERAL_ROLE_IDB05A1|GAP_CENTRAL_ROLE_IDB05A1|GAP_OBSERVER_ROLE_IDB05A1,
+    #if BLUENRG_MS
+        ret = aci_gap_init(GAP_PERIPHERAL_ROLE|GAP_CENTRAL_ROLE_IDB05A1|GAP_OBSERVER_ROLE_IDB05A1,
                                    0,
                                    0x18,
                                    &service_handle,
                                    &dev_name_char_handle,
                                    &appearance_char_handle);
-    } else {
+    #else
         // IDB04A1 is configured as peripheral by default
-        ret = aci_gap_init_IDB04A1(GAP_PERIPHERAL_ROLE_IDB04A1, &service_handle, &dev_name_char_handle, &appearance_char_handle);
-    }
+        ret = aci_gap_init(GAP_PERIPHERAL_ROLE, &service_handle, &dev_name_char_handle, &appearance_char_handle);
+    #endif
 
     // read the default static address and inject it into the GAP object
     {
@@ -669,7 +673,7 @@ extern "C" {
             evt_l2cap_conn_upd_req *evt = (evt_l2cap_conn_upd_req*)blue_evt->data;
             if(bnrg_expansion_board == IDB05A1) {
               // we assume the application accepts the request from the slave
-              aci_l2cap_connection_parameter_update_response_IDB05A1(evt->conn_handle,
+              aci_l2cap_connection_parameter_update_response(evt->conn_handle,
                                                                      evt->interval_min,
                                                                      evt->interval_max,
                                                                      evt->slave_latency,

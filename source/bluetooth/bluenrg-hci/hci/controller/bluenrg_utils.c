@@ -1,14 +1,15 @@
 
-#include "ble_hal.h"
-#include "ble_hal_types.h"
+#include "ble_lib.h"
+#include "tl_types.h"
 #include "ble_status.h"
-#include "bluenrg_aci.h"
-#include "bluenrg_utils.h"
 #include "ble_hci.h"
-#include "ble_hci_le.h"
-#include "ble_osal.h"
-#include "string.h"
+#include "bluenrg_hal_aci.h"
 #include "stm32_bluenrg_ble.h"
+#include "bluenrg_utils.h"
+#include "bluenrg_updater_aci.h"
+#include "hci_le.h"
+#include "osal.h"
+#include "string.h"
 
 #define SUPPORTED_BOOTLOADER_VERSION_MIN  3
 #define SUPPORTED_BOOTLOADER_VERSION_MAX  5
@@ -57,8 +58,6 @@
       error = BLE_UTIL_ACI_ERROR;	\
   }					\
 }
-
-#define MIN(a,b) (((a)<(b))?(a):(b))
 
 /* This function calculates the CRC of a sector of flash, if bytes passed are less than sector size, 
    they are extended with 0xFF until sector size is reached

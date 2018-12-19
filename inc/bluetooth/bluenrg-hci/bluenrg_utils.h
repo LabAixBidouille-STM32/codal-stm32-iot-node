@@ -27,8 +27,8 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "ble_hal_types.h" 
-#include "ble_compiler.h"
+#include "bluenrg_private_hal_types.h" 
+#include "compiler.h"
 
 /* Exported types ------------------------------------------------------------*/
 typedef struct{
@@ -44,7 +44,7 @@ typedef struct{
 /**
  * Structure inside IFR for configuration options. 
  */
-typedef __packed struct{
+typedef struct{
   uint8_t cold_ana_act_config_table[64];
   uint8_t hot_ana_config_table[64];
   uint8_t stack_mode;
