@@ -4,8 +4,10 @@
     "c_flags": "-std=gnu11 -D__weak=\"__attribute__((weak))\" -D__packed=\"__attribute__((__packed__))\" -DUSE_HAL_DRIVER -DSTM32L475xx -fwrapv -Warray-bounds -ffunction-sections -fdata-sections -g -fstack-usage -Wall ",
     "cmake_definitions": {},
     "config": {
+        "BLUENRG_MS": 1,
         "CODAL_DEBUG": "CODAL_DEBUG_ENABLED",
         "CODAL_TIMESTAMP": "uint32_t",
+        "DENABLE_SPI_FIX": 1,
         "DEVICE_COMPONENT_COUNT": 30,
         "DEVICE_DEFAULT_PULLMODE": "PullMode::None",
         "DEVICE_DEFAULT_SERIAL_MODE": "SerialMode::SYNC_SLEEP",
@@ -23,27 +25,25 @@
         "MESSAGE_BUS_LISTENER_MAX_QUEUE_DEPTH": 10,
         "PROCESSOR_WORD_TYPE": "uint32_t",
         "SCHEDULER_TICK_PERIOD_US": 1000,
+        "SET_L2CAP_CONN_UPD_REQ_COMMAND": 1,
         "USE_ACCEL_LSB": 0,
-        "BLUENRG_MS" : 1,
-        "USE_STM32L475E_IOT01" : 1,
-        "SET_L2CAP_CONN_UPD_REQ_COMMAND" : 1,
-        "DENABLE_SPI_FIX" : 1
+        "USE_STM32L475E_IOT01": 1
     },
     "cpp_flags": "-std=c++11 -Wno-register -D__weak=\"__attribute__((weak))\" -D__packed=\"__attribute__((__packed__))\" -fwrapv -fno-rtti -fno-threadsafe-statics -fno-exceptions -fno-unwind-tables -Wl,--gc-sections -Wl,--sort-common -Wl,--sort-section=alignment -Wno-array-bounds -DUSE_HAL_DRIVER -DSTM32L475xx -g -fstack-usage -Wall",
     "cpu_opts": "-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16",
-    "definitions": "-DSTM32L4 -DSTM32L475xx -DDMESG_SERIAL_DEBUG -include codal-stm32-iot-node/inc/localconf.h",
+    "definitions": "-DSTM32L4  -DSTM32L475xx -DDMESG_SERIAL_DEBUG -include codal-stm32-iot-node/inc/localconf.h",
     "device": "STM32_IOT_NODE",
     "generate_bin": true,
     "generate_hex": true,
     "libraries": [
         {
-            "branch": "9aaaab57e2e0f3cee6ef2d41eb60ba1a948e018e",
+            "branch": "d9686dbf2be4236848c89d1bac41cfdff5a45df7",
             "name": "codal-core",
             "type": "git",
             "url": "https://github.com/LabAixBidouille-STM32/codal-core"
         },
         {
-            "branch": "010dfc384e9274dc15673323440b9c3dc5882553",
+            "branch": "d4eaae2c3f28cfb3bf0b3d57b9b4af617285df4d",
             "name": "codal-stm32l475",
             "type": "git",
             "url": "https://github.com/nedseb/codal-stm32l475"
@@ -52,6 +52,6 @@
     "linker_flags": "-Wl,--no-wchar-size-warning -Wl,--gc-sections -static -Wl,--gc-sections -Wl,--defsym=malloc_getpagesize_P=0x80 -Wl,--start-group -lc -lm -Wl,--end-group -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16",
     "post_process": "",
     "processor": "STM32L4",
-    "snapshot_version": "v0.11.13",
+    "snapshot_version": "v0.12.0",
     "toolchain": "ARM_GCC"
 }
