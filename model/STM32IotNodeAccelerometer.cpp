@@ -27,10 +27,11 @@ namespace codal
     previousSampleTime(0)
   {
     previousSampleTime = system_timer_current_time();
+    samplePeriod = 20;
+    sampleRange = 2;
 
     configure();
 
-    // Configure for a 20 Hz update frequency by default.
     if(EventModel::defaultEventBus)
         EventModel::defaultEventBus->listen(this->id, SENSOR_UPDATE_NEEDED, this, &STM32IotNodeAccelerometer::onSampleEvent, MESSAGE_BUS_LISTENER_IMMEDIATE);
 

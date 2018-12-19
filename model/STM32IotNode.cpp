@@ -24,7 +24,7 @@ STM32IotNode::STM32IotNode()
     spi3(io.miso3, io.mosi3, io.sclk3),
     i2c1(io.sda, io.scl),
     i2c2(io.sda2, io.scl2),
-    coordinateSpace(SIMPLE_CARTESIAN, false, COORDINATE_SPACE_ROTATED_0),
+    coordinateSpace(SIMPLE_CARTESIAN, true, COORDINATE_SPACE_ROTATED_180),
     accelerometer(coordinateSpace),
     gyroscope(coordinateSpace),
     magnetometer(coordinateSpace)
