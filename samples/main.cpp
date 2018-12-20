@@ -8,6 +8,9 @@
 #elif defined(BLE_HEARTRATE_SAMPLE)
     #include "HeartRate.h"
     #define SAMPLE_MAIN HeartRate_main
+#elif defined(BLE_JOYSTICK_SAMPLE)
+    #include "Joystick.h"
+    #define SAMPLE_MAIN Joystick_main
 #elif defined(BLE_THERMOMETER_SAMPLE)
     #include "BLE_Thermometer.h"
     #define SAMPLE_MAIN BLE_Thermometer_main
