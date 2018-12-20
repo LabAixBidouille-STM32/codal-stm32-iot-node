@@ -44,17 +44,12 @@
 extern BlueNRGDevice bluenrgDeviceInstance;
 
 
-////////////////////////////////////////
-// Start of C function wrappers
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #include "bluenrg_updater_aci.h"
 #include "stm32_bluenrg_ble.h"
 #include "ble_debug.h"
 
-	
+extern "C" {	
 void BlueNRG_RST(void)
 {
     bluenrgDeviceInstance.reset();
@@ -205,14 +200,5 @@ void Clear_SPI_IRQ(void)
 void Clear_SPI_EXTI_Flag(void)
 {  
 }
-
-
-
-
-#ifdef __cplusplus
 }
-#endif
-// End of C function wrappers
-////////////////////////////////////////
- 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
