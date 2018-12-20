@@ -16,6 +16,8 @@
 #ifndef __BLUE_NRG_GATT_SERVER_H__
 #define __BLUE_NRG_GATT_SERVER_H__
 
+#include "common.h"
+#include "compiler.h"
 #include "ble_status.h"
 
 /**

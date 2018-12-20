@@ -18,6 +18,10 @@
 
 #include "bluenrg_gatt_server.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
 /**
  *@addtogroup GATT GATT
  *@brief GATT layer.
@@ -1222,12 +1226,8 @@ typedef __packed struct _evt_gatt_prepare_write_permit_req{
 #endif
 
 
-/**
- * @}
- */
-
-/**
- * @}
- */
+#ifdef __cplusplus
+}
+#endif 
 
 #endif /* __BLUENRG_GATT_ACI_H__ */

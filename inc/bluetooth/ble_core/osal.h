@@ -19,6 +19,10 @@
 #ifndef __OSAL_H__
 #define __OSAL_H__
 
+#ifdef __cplusplus
+ extern "C" {
+#endif 
+
 /******************************************************************************
  * Includes
  *****************************************************************************/
@@ -44,7 +48,7 @@
  * @return  Address of the destination
  */
  
-extern void* Osal_MemCpy(void *dest,const void *src, unsigned int size);
+void* Osal_MemCpy(void *dest,const void *src, unsigned int size);
 
 /**
  * This function sets first number of bytes, specified
@@ -58,7 +62,7 @@ extern void* Osal_MemCpy(void *dest,const void *src, unsigned int size);
  * @return  Address of the destination
  */
  
-extern void* Osal_MemSet(void *ptr, int value, unsigned int size);
+void* Osal_MemSet(void *ptr, int value, unsigned int size);
 
 /**
  * This function compares n bytes of two regions of memory
@@ -69,5 +73,9 @@ extern void* Osal_MemSet(void *ptr, int value, unsigned int size);
  * 
  * @return  0 if the two buffers are equal, 1 otherwise
  */
-extern int Osal_MemCmp(void *s1,void *s2,unsigned int size);
+int Osal_MemCmp(void *s1,void *s2,unsigned int size);
+
+#ifdef __cplusplus
+ }
+#endif 
 #endif /* __OSAL_H__ */

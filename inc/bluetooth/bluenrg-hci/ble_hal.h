@@ -17,10 +17,15 @@
 #ifndef __BLE_HAL_H__
 #define __BLE_HAL_H__
 
+#ifdef __cplusplus
+ extern "C" {
+#endif 	
+
 /******************************************************************************
  * Includes
  *****************************************************************************/
 #include <ble_status.h>
+
 
 
 /******************************************************************************
@@ -103,5 +108,9 @@ void Hal_Init_Timer(void);
 uint32_t Hal_Get_Timer_Value(void);
 void Hal_Start_Timer(uint32_t timeout);
 void Hal_Stop_Timer(void);
+
+#ifdef __cplusplus
+ }
+#endif 	
 
 #endif /* __BLE_HAL_H__ */

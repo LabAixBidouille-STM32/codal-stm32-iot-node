@@ -16,6 +16,12 @@
 #ifndef __BLUENRG_HAL_ACI_H__
 #define __BLUENRG_HAL_ACI_H__
 
+#include "ble_status.h"
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif 
 /**
  *@addtogroup HAL HAL
  *@brief Hardware Abstraction Layer.
@@ -407,6 +413,8 @@ typedef __packed struct _evt_hal_crash_info{
 /**
  * @}
  */
-
+#ifdef __cplusplus
+ }
+#endif 
 
 #endif /* __BLUENRG_HAL_ACI_H__ */
