@@ -1,66 +1,14 @@
-/**
- ******************************************************************************
- * @file    hr.c
- * @author  MCD Application Team
- * @brief   HeartRate Application
- ******************************************************************************
- * @attention
- *
- * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics International N.V.
- * All rights reserved.</center></h2>
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted, provided that the following conditions are met:
- *
- * 1. Redistribution of source code must retain the above copyright notice, 
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 3. Neither the name of STMicroelectronics nor the names of other 
- *    contributors to this software may be used to endorse or promote products 
- *    derived from this software without specific written permission.
- * 4. This software, including modifications and/or derivative works of this 
- *    software, must execute solely and exclusively on microcontroller or
- *    microprocessor devices manufactured by or for STMicroelectronics.
- * 5. Redistribution and use of this software other than as permitted under 
- *    this license is void and will automatically terminate your rights under 
- *    this license. 
- *
- * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
- * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
- * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
- * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- ******************************************************************************
- */
-
-/* Includes ------------------------------------------------------------------*/
 #include "common.h"
 #include "hw.h"
-
 #include "ble_lib.h"
 #include "blesvc.h"
-
 #include "hr.h"
-#include "dis_app.h"
 #include "hrs_app.h"
-
-#include "scheduler.h"
 #include "bluenrg_debug.h"
 #include "tl_types.h"
 #include "tl_ble_hci.h"
 #include "tl_ble_reassembly.h"
 
-/* Private typedef -----------------------------------------------------------*/
 typedef enum
 {
   HR_IDLE,
@@ -141,7 +89,7 @@ typedef struct _tSecurityParams
   * processing
   */ 
   uint8_t initiateSecurity;
-}tSecurityParams;
+} tSecurityParams;
 
 /**
  * global context
@@ -186,7 +134,6 @@ typedef struct _tBLEProfileGlobalContext
    * the UUID list to be used while advertising
    */ 
     uint8_t advtServUUID[100];
-
 }BleGlobalContext_t;
 
 typedef struct
@@ -197,56 +144,24 @@ typedef struct
 } BleApplicationContext_t;
 
 
-/* Private defines -----------------------------------------------------------*/
 #define FAST_ADV_TIMEOUT            (30*1000*1000/CFG_TS_TICK_VAL) /**< 30s */
-
 #define POOL_SIZE (CFG_TLBLE_EVT_QUEUE_LENGTH * ( sizeof(TL_PacketHeader_t) + TL_BLE_EVENT_FRAME_SIZE ))
 
-
-/* Private macros ------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
-/**
- * START of Section BLE_APP_CONTEXT
- */
 static BleApplicationContext_t BleApplicationContext;
 static uint16_t AdvIntervalMin, AdvIntervalMax;
 
-/**
- * END of Section BLE_APP_CONTEXT
- */
-
-/*******************************************************************************
- * START of Section BLE_STDBY_MEM
- */
 static TL_CmdPacket_t CmdBuffer;
 
-
-/*******************************************************************************
- * END of Section BLE_STDBY_MEM
- */
-
-
-/*******************************************************************************
- * START of Section BLE_SHARED_NORET_MEM
- */
 static uint8_t EvtPool[POOL_SIZE];
-
-/*******************************************************************************
- * END of Section BLE_SHARED_NORET_MEM
- */
 
 uint8_t Test_Status =0x00;
 
 static const char local_name[] = {AD_TYPE_COMPLETE_LOCAL_NAME,'H','R','_','L','4','7','5','_','I','o','T'};
 
-/* Global variables ----------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
 static void Add_Advertisment_Service_UUID(uint16_t servUUID);
 static void Adv_Request(HR_ConnStatus_t New_Status);
 static void ConnMgr( void );
 
-/* Functions Definition ------------------------------------------------------*/
 void HR_Init(HR_InitMode_t InitMode)
 {
   uint8_t index;
@@ -316,11 +231,6 @@ void HR_Init(HR_InitMode_t InitMode)
     {
       aci_gap_configure_whitelist();
     }
-
-    /**
-     * Initialize DIS Applciation
-     */
-    DISAPP_Init();
     
     /**
      * Initialize HRS Application
@@ -404,7 +314,7 @@ void Adv_Request(HR_ConnStatus_t New_Status)
      */
     HW_TS_Stop(BleApplicationContext.Connection_mgr_timer_Id);
 
-    APPL_MESG_DBG("Adv_Request(), first index in %d state: %d\n",
+    printf("Adv_Request(), first index in %d state: %d\n",
                   BleApplicationContext.Device_Connection_Status[index],
                   index);
 
@@ -416,11 +326,11 @@ void Adv_Request(HR_ConnStatus_t New_Status)
       ret = aci_gap_set_non_discoverable();
       if( ret == BLE_STATUS_SUCCESS )
       {
-        APPL_MESG_DBG("Adv_Request(), Successfully Stopped Advertising at index: %d\n", index);
+        printf("Adv_Request(), Successfully Stopped Advertising at index: %d\n", index);
       }
       else
       {
-        APPL_MESG_DBG("Adv_Request(), Stop Advertising Failed at index: %d, result: %d \n", index, ret);
+        printf("Adv_Request(), Stop Advertising Failed at index: %d, result: %d \n", index, ret);
       }
     }
 
@@ -441,22 +351,22 @@ void Adv_Request(HR_ConnStatus_t New_Status)
     {
       if(New_Status == HR_FAST_ADV)
       {
-        APPL_MESG_DBG("Adv_Request(), Successfully Start Fast Advertising at index: %d\n", index);
+        printf("Adv_Request(), Successfully Start Fast Advertising at index: %d\n", index);
       }
       else
       {
-        APPL_MESG_DBG("Adv_Request(), Successfully Start Low Power Advertising at index: %d\n", index);
+        printf("Adv_Request(), Successfully Start Low Power Advertising at index: %d\n", index);
       }
     }
     else
     {
       if(New_Status == HR_FAST_ADV)
       {
-        APPL_MESG_DBG("Adv_Request(), Start Fast Advertising Failed at index: %d, result: %d \n", index, ret);
+        printf("Adv_Request(), Start Fast Advertising Failed at index: %d, result: %d \n", index, ret);
       }
       else
       {
-        APPL_MESG_DBG("Adv_Request(), Start Low Power Advertising Failed at index: %d, result: %d \n", index, ret);
+        printf("Adv_Request(), Start Low Power Advertising Failed at index: %d, result: %d \n", index, ret);
       }
     }
     if(New_Status == HR_FAST_ADV)
@@ -467,7 +377,7 @@ void Adv_Request(HR_ConnStatus_t New_Status)
   }
   else
   {
-    APPL_MESG_DBG("Adv_Request(), no index in HR_IDLE state !\n");
+    printf("Adv_Request(), no index in HR_IDLE state !\n");
   }
   return;
 }
@@ -488,7 +398,7 @@ void SVCCTL_App_Notification(void *pckt)
         
         disconnection_complete_event = (evt_disconn_complete *)event_pckt->data;
           
-        APPL_MESG_DBG("SVCCTL_App_Notification: EVT_DISCONN_COMPLETE for connection handle 0x%x\n", 
+        printf("SVCCTL_App_Notification: EVT_DISCONN_COMPLETE for connection handle 0x%x\n", 
                       disconnection_complete_event->handle);
         /* Find index of the handle deconnected */
         index = 0;        
@@ -500,14 +410,14 @@ void SVCCTL_App_Notification(void *pckt)
         
         if(index < CFG_MAX_CONNECTION)
         {
-          APPL_MESG_DBG("SVCCTL_App_Notification: index of the handle deconnected: %d\n", index);
+          printf("SVCCTL_App_Notification: index of the handle deconnected: %d\n", index);
           BleApplicationContext.Device_Connection_Status[index] = HR_IDLE;
           BleApplicationContext.BleApplicationContext_legacy.connectionHandle[index] = 
             0xFFFF;
         }
         else
         {
-          APPL_MESG_DBG("SVCCTL_App_Notification: no index found for the handle discconnected !\n");
+          printf("SVCCTL_App_Notification: no index found for the handle discconnected !\n");
         }
         /* restart advertising */
         Adv_Request(HR_FAST_ADV);
@@ -530,7 +440,7 @@ void SVCCTL_App_Notification(void *pckt)
               connection_complete_event = (evt_le_connection_complete *)meta_evt->data;
               HW_TS_Stop(BleApplicationContext.Connection_mgr_timer_Id);
 
-              APPL_MESG_DBG("SVCCTL_App_Notification: EVT_LE_CONN_COMPLETE for connection handle 0x%x\n",
+              printf("SVCCTL_App_Notification: EVT_LE_CONN_COMPLETE for connection handle 0x%x\n",
                             connection_complete_event->handle);
 
               /* Find index of a connection not in HR_IDLE, HR_CONNECTED_SERVER or HR_CONNECTED_CLIENT state */
@@ -545,7 +455,7 @@ void SVCCTL_App_Notification(void *pckt)
         
               if(index < CFG_MAX_CONNECTION)
               {
-                APPL_MESG_DBG("SVCCTL_App_Notification(), first index in state %d: %d\n", 
+                printf("SVCCTL_App_Notification(), first index in state %d: %d\n", 
                               BleApplicationContext.Device_Connection_Status[index],
                               index);
                 if(BleApplicationContext.Device_Connection_Status[index] == HR_LP_CONNECTING)
@@ -558,7 +468,7 @@ void SVCCTL_App_Notification(void *pckt)
               }
               else
               {
-                APPL_MESG_DBG("SVCCTL_App_Notification(), no stored connection in state different than HR_IDLE, HR_CONNECTED_CLIENT and HR_CONNECTED_SERVER!\n");             
+                printf("SVCCTL_App_Notification(), no stored connection in state different than HR_IDLE, HR_CONNECTED_CLIENT and HR_CONNECTED_SERVER!\n");             
               }
             }
             break; /* HCI_EVT_LE_CONN_COMPLETE */
@@ -597,5 +507,3 @@ static void ConnMgr( void )
 
   return;
 }
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

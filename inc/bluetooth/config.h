@@ -47,11 +47,12 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#include "stm32l4xx_ll_pwr.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "stm32l4xx_ll_pwr.h"
 
 /**
  * This setting shall be set to 0 when BlueNRG is used as a coprocessor
@@ -583,10 +584,28 @@ typedef enum
 #define USED                                               __attribute__((used))
 #endif
 
+/*---------- Number of Bytes reserved for HCI Read Packet -----------*/
+#define HCI_READ_PACKET_SIZE      128
+/*---------- Advertising Type -----------*/
+#define ADV_DATA_TYPE      ADV_IND
+/*---------- Minimum Advertising Interval (for a number N, Time = N x 0.625 msec) -----------*/
+#define ADV_INTERV_MIN      2048
+/*---------- Maximum Advertising Interval (for a number N, Time = N x 0.625 msec) -----------*/
+#define ADV_INTERV_MAX      4096
+/*---------- Minimum Connection Event Interval (for a number N, Time = N x 1.25 msec) -----------*/
+#define L2CAP_INTERV_MIN      9
+/*---------- Maximum Connection Event Interval (for a number N, Time = N x 1.25 msec) -----------*/
+#define L2CAP_INTERV_MAX      20
+/*---------- Timeout Multiplier (for a number N, Time = N x 10 msec) -----------*/
+#define L2CAP_TIMEOUT_MULTIPLIER      600
+
+#define HCI_DEFAULT_TIMEOUT_MS        1000
+
+#define BLUENRG_memcpy                memcpy
+#define BLUENRG_memset                memset
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif /*__CONFIG_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
