@@ -39,7 +39,6 @@ const char* gestureName(int value){
 }
 
 void onSampleEvent(Event e){
-    default_device_instance->sleep(100);
     Sample3D sample = default_device_instance->accelerometer.getSample();
     if(e.source == DEVICE_ID_ACCELEROMETER)
         printf("(%ld) ACCELERATION  = |X : %d, Y : %d, Z : %d|\n", e.timestamp,sample.x, sample.y, sample.z);

@@ -77,6 +77,15 @@ namespace codal
      * Event Handler for periodic sample timer
      */
     void onSampleEvent(Event);
+
+    /**
+    * A periodic callback invoked by the fiber scheduler idle thread.
+    *
+    * Internally calls updateSample().
+    */
+    virtual void idleCallback(){
+      requestUpdate();
+    }
   };
 }
 
