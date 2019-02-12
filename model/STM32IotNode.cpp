@@ -15,7 +15,8 @@ STM32IotNode *codal::default_device_instance = nullptr;
   */
 STM32IotNode::STM32IotNode()
   : CodalComponent(),
-    timer(), 
+    tim5(TIM5, TIM5_IRQn),
+    timer(tim5), 
     messageBus(), 
     io(),
     serial(io.tx, io.rx),
@@ -59,7 +60,7 @@ int STM32IotNode::init()
 
     status |= DEVICE_INITIALIZED;
 
-    timer.init();
+    //timer.init();
     serial.init();
     i2c2.init();
 

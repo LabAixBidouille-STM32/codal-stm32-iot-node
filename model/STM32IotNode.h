@@ -5,6 +5,8 @@
 #include "CodalDevice.h"
 #include "CodalFiber.h"
 #include "CodalDmesg.h"
+#include "codal-core/inc/types/Event.h"
+#include "codal-core/inc/driver-models/Timer.h"
 
 #include "NotifyEvents.h"
 #include "MessageBus.h"
@@ -12,7 +14,7 @@
 #include "Button.h"
 #include "STM32IotNodeIO.h"
 #include "STM32SPBTLE.h"
-#include "stm32l4xxTimer.h"
+#include "stm32l4xxLowLevelTimer.h"
 #include "stm32l4xxSPI.h"
 #include "stm32l4xxI2C.h"
 #include "stm32l4xxSimpleSerial.h"
@@ -35,10 +37,12 @@
  */
 namespace codal
 {
-    class STM32IotNode : public CodalDevice, public CodalComponent
+    class STM32IotNode : public CodalComponent
     {
         public:
-            STM32L4xxTimer timer;
+            STM32L4xxLowLevelTimer tim5;
+            Timer timer;
+
             MessageBus     messageBus;
 
             STM32IotNodeIO io;
