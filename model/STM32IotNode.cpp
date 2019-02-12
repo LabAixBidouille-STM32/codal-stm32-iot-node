@@ -81,16 +81,6 @@ int STM32IotNode::init()
     return DEVICE_OK;
 }
 
-int target_seed_random(uint32_t rand)
-{
-    return codal::seed_random(rand);
-}
-
-int target_random(int max)
-{
-    return codal::random(max);
-}
-
 WEAK int __io_putchar(int ch);
 
 void STM32IotNode_dmesg_flush()
