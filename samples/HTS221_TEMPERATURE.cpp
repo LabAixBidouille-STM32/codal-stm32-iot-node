@@ -6,10 +6,8 @@
 using namespace codal;
 
 void onSampleEvent(Event e){
-        float sensor_value = default_device_instance->temperature.getValue();
-        int isensor_value  = (int) sensor_value/10.;
-        int dsensor_value = int((sensor_value/10. - isensor_value)*10.);
-        printf("\nTEMPERATURE = %d.%d degC\n", isensor_value, dsensor_value);
+        int sensor_value = default_device_instance->temperature.getValue();
+        printf("\nTEMPERATURE = %d degC\n", sensor_value);
 }
 
 void HTS221_TEMPERATURE_main(codal::STM32IotNode& iotNode){
